@@ -1301,6 +1301,7 @@
             "鳥": { name: "鳥", dist: "遠程", r: 4, baseSpd: 40 }
         };
 
+        // 生物階級規則：2 字生物最高 Lv.5；3 字高階生物最高 Lv.6。
         const SPECIES = [
             { name: "青蛇", words: ["青", "蛇"], r: 1.5, baseSpd: 38, skill: "毒牙撕咬", skillType: "single_burst", dmgMult: 3.5 },
             { name: "獵豹", words: ["獵", "豹"], r: 1.5, baseSpd: 36, skill: "極速狂爪", skillType: "single_burst", dmgMult: 3.8 },
@@ -1318,6 +1319,10 @@
             { name: "水蛇", words: ["水", "蛇"], r: 2, baseSpd: 38, skill: "激流漩渦", skillType: "medium_aoe", aoeRadius: 2.2, dmgMult: 2.0 },
             { name: "水蛙", words: ["水", "蛙"], r: 2, baseSpd: 40, skill: "連環水砲", skillType: "medium_aoe", aoeRadius: 2.2, dmgMult: 2.1 },
             { name: "龍貓", words: ["龍", "貓"], r: 2, baseSpd: 38, skill: "幻氣震爆", skillType: "medium_aoe", aoeRadius: 2.2, dmgMult: 2.0 },
+            { name: "水牛", words: ["水", "牛"], r: 2.2, baseSpd: 36, skill: "蠻力衝撞", skillType: "medium_aoe", aoeRadius: 2.2, dmgMult: 2.4 },
+            { name: "魚鷹", words: ["魚", "鷹"], r: 4.2, baseSpd: 36, skill: "俯衝獵殺", skillType: "single_burst", dmgMult: 4.2 },
+            { name: "魚虎", words: ["魚", "虎"], r: 3.4, baseSpd: 37, skill: "虎口追咬", skillType: "single_burst", dmgMult: 4.0 },
+            { name: "龍魚", words: ["龍", "魚"], r: 3.4, baseSpd: 36, skill: "龍鱗水彈", skillType: "large_aoe", aoeRadius: 4.2, dmgMult: 1.8 },
 
             { name: "貓頭鷹", words: ["貓", "頭", "鷹"], r: 3, baseSpd: 40, skill: "羽刃天降", skillType: "large_aoe", aoeRadius: 3.5, dmgMult: 1.5 },
             { name: "金魚", words: ["金", "魚"], r: 3, baseSpd: 40, skill: "波光飛彈", skillType: "large_aoe", aoeRadius: 3.5, dmgMult: 1.4 },
@@ -1325,7 +1330,8 @@
 
             { name: "灰鷹", words: ["灰", "鷹"], r: 4, baseSpd: 40, skill: "蒼茫暴風", skillType: "huge_aoe", aoeRadius: 4.8, dmgMult: 1.2 },
             { name: "獵鷹", words: ["獵", "鷹"], r: 4, baseSpd: 38, skill: "天鷹巡獵", skillType: "huge_aoe", aoeRadius: 4.8, dmgMult: 1.3 },
-            { name: "老鷹", words: ["老", "鷹"], r: 4, baseSpd: 40, skill: "神鷹破陣", skillType: "huge_aoe", aoeRadius: 5.0, dmgMult: 1.2 }
+            { name: "老鷹", words: ["老", "鷹"], r: 4, baseSpd: 40, skill: "神鷹破陣", skillType: "huge_aoe", aoeRadius: 5.0, dmgMult: 1.2 },
+            { name: "灰頭鷹", words: ["灰", "頭", "鷹"], r: 5.5, baseSpd: 34, skill: "鷹眼獵殺", skillType: "huge_aoe", aoeRadius: 6.2, dmgMult: 2.0, preferBoss: true, bossDmgMult: 1.8 }
         ];
 
         const WORD_CHARS = ["灰", "狼", "鷹", "青", "蛇", "蛙", "獵", "豹", "貓", "頭", "老", "虎", "鼠", "獅", "子", "野", "牛", "金", "魚", "水", "龍"];
@@ -2463,12 +2469,29 @@
 
                 let primaryTarget = null;
                 let minDist = Infinity;
-                for (let en of this.enemies) {
-                    let pPos = this.getEnemyPos(en);
-                    let dist = Math.hypot(pPos.x - ux, pPos.y - uy);
-                    if (dist <= maxDist && en.hp > 0 && dist < minDist) {
-                        minDist = dist;
-                        primaryTarget = en;
+
+                // 三字高階生物「灰頭鷹」優先鎖定 Boss。
+                if (sp.preferBoss) {
+                    for (let en of this.enemies) {
+                        if (!en.isBoss || en.hp <= 0) continue;
+                        let pPos = this.getEnemyPos(en);
+                        let dist = Math.hypot(pPos.x - ux, pPos.y - uy);
+                        if (dist <= maxDist && dist < minDist) {
+                            minDist = dist;
+                            primaryTarget = en;
+                        }
+                    }
+                }
+
+                if (!primaryTarget) {
+                    minDist = Infinity;
+                    for (let en of this.enemies) {
+                        let pPos = this.getEnemyPos(en);
+                        let dist = Math.hypot(pPos.x - ux, pPos.y - uy);
+                        if (dist <= maxDist && en.hp > 0 && dist < minDist) {
+                            minDist = dist;
+                            primaryTarget = en;
+                        }
                     }
                 }
 
@@ -2510,7 +2533,11 @@
                     for (let en of this.enemies) {
                         let ePos = this.getEnemyPos(en);
                         if (Math.hypot(ePos.x - tPos.x, ePos.y - tPos.y) <= aoePixelRadius && en.hp > 0) {
-                            this.hitTarget({ target: en, dmg: aoeDmg, sourceFormation: form });
+                            let finalDmg = aoeDmg;
+                            if (sp.preferBoss && en.isBoss) {
+                                finalDmg = Math.floor(finalDmg * (sp.bossDmgMult || 1.0));
+                            }
+                            this.hitTarget({ target: en, dmg: finalDmg, sourceFormation: form });
                         }
                     }
                 }
@@ -2582,7 +2609,8 @@
                                 }
                                 this.speciesExperience[spName].kills++;
 
-                                if (form.kills >= form.level * 2 && form.level < 6) {
+                                const maxSpeciesLevel = (form.species.words && form.species.words.length >= 3) ? 6 : 5;
+                                if (form.kills >= form.level * 2 && form.level < maxSpeciesLevel) {
                                     form.level++;
                                     this.speciesExperience[spName].level = form.level;
                                     sound.playLevelUp();
