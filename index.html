@@ -1,0 +1,3817 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>自然文字對決</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            touch-action: none;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #182216;
+            font-family: "PingFang TC", "Microsoft JhengHei", "Comic Sans MS", cursive, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #2b3a26;
+            transition: background 0.4s ease;
+        }
+
+        #landing-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at 50% 25%, #2d5a27 0%, #173814 55%, #0a1809 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            box-sizing: border-box;
+            touch-action: pan-y;
+            overflow-y: auto;
+        }
+        .landing-title {
+            font-size: 46px;
+            font-weight: 900;
+            color: #ffeb3b;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.8), 0 0 25px rgba(255, 235, 59, 0.45);
+            letter-spacing: 4px;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+        .landing-subtitle {
+            font-size: 15px;
+            color: #c8e6c9;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+        .landing-card {
+            background: rgba(253, 250, 231, 0.96);
+            border: 4px solid #4a6741;
+            border-radius: 18px;
+            padding: 22px;
+            max-width: 620px;
+            width: 95%;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .instructions-box {
+            width: 100%;
+            background: #fff;
+            border: 2px solid #a5d6a7;
+            border-radius: 12px;
+            padding: 12px 18px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #2e4d25;
+            text-align: left;
+            margin-bottom: 18px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .instructions-box h3 {
+            margin: 0 0 6px 0;
+            font-size: 16px;
+            color: #1b5e20;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .instructions-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .instructions-box li {
+            margin-bottom: 3px;
+        }
+
+        .mode-selection-zone {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .mode-tabs {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            width: 100%;
+        }
+        .mode-tab-btn {
+            flex: 1;
+            padding: 10px 14px;
+            border: 2px solid #388e3c;
+            background: #e8f5e9;
+            font-size: 15px;
+            font-weight: 900;
+            color: #2e7d32;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .mode-tab-btn.active {
+            background: #4caf50;
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.4);
+            transform: translateY(-2px);
+        }
+        .mode-detail-panel {
+            background: #f1f8e9;
+            border: 2px dashed #81c784;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        #top-bar {
+            background: #fff;
+            border: 3px solid #444;
+            border-radius: 12px;
+            padding: 6px 20px;
+            display: flex;
+            gap: 14px;
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 6px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            align-items: center;
+            z-index: 10;
+        }
+        .top-btn {
+            background: #4caf50;
+            color: white;
+            border: 2px solid #2e7d32;
+            padding: 4px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            touch-action: auto;
+        }
+        .gold-display {
+            color: #d84315;
+            font-size: 15px;
+            font-weight: 900;
+        }
+        .dock-base-name { color: #111; }
+        .dock-char-name { color: #2e7d32; font-weight: 900; }
+        #pause-overlay { display:none; }
+        #p1-golden-shovel-slot {
+            display:none;
+            width:44px;
+            height:52px;
+            min-width:44px;
+            min-height:52px;
+            padding:2px;
+            flex:0 0 44px;
+            border:2px solid #c9a227;
+            border-radius:8px;
+            background:linear-gradient(180deg,#fff8cf 0%,#ffe58a 100%);
+            color:#7a5a00;
+            font-size:11px;
+            font-weight:900;
+            line-height:1.05;
+            cursor:grab;
+            box-shadow:0 2px 0 #a67c00;
+            touch-action:none;
+            align-items:center;
+            justify-content:center;
+            text-align:center;
+            white-space:normal;
+            user-select:none;
+        }
+        #p1-golden-shovel-slot:active { cursor:grabbing; transform:translateY(1px); }
+        #postbattle-shop-btn { display:none; }
+
+        #raid-banner {
+            display: none;
+            position: fixed;
+            top: 60px;
+            background: rgba(213, 0, 0, 0.95);
+            color: #fff;
+            padding: 8px 28px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            box-shadow: 0 0 25px #ff1744;
+            animation: pulseWarning 0.6s infinite alternate;
+            z-index: 100;
+            pointer-events: none;
+            border: 3px solid #ffea00;
+        }
+        @keyframes pulseWarning {
+            from { transform: scale(1); box-shadow: 0 0 15px #ff1744; }
+            to { transform: scale(1.06); box-shadow: 0 0 35px #ffff00; }
+        }
+
+        #game-arena {
+            display: flex;
+            gap: 14px;
+            padding: 10px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            position: relative;
+            background: #2b3a2b;
+            max-height: 92vh;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.4s ease;
+        }
+        .player-side {
+            border: 3px solid #444;
+            border-radius: 12px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            background: #e2e8f0;
+            width: 320px;
+            transition: all 0.3s ease;
+        }
+        .player-side.single-mode {
+            width: 440px;
+            padding: 12px;
+            border-width: 4px;
+        }
+        .side-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            background: rgba(0,0,0,0.08);
+        }
+        .player-side.single-mode .side-header {
+            font-size: 17px;
+            padding: 6px 12px;
+            margin-bottom: 8px;
+        }
+        canvas {
+            border: 3px solid #475569;
+            border-radius: 8px;
+            display: block;
+            cursor: pointer;
+            touch-action: none;
+            background: #fdf7ea;
+        }
+
+        .dock-container {
+            width: 100%;
+            margin-top: 6px;
+            border: 2px solid #666;
+            border-radius: 8px;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background: rgba(0,0,0,0.05);
+            touch-action: none;
+        }
+        .player-side.single-mode .dock-container {
+            margin-top: 10px;
+            padding: 8px;
+            gap: 8px;
+        }
+        .dock-slots {
+            display: flex;
+            gap: 4px;
+            width: 100%;
+            justify-content: center;
+            flex-wrap: nowrap;
+        }
+        .dock-slot {
+            width: 32px;
+            height: 40px;
+            background: #fffdf5;
+            border: 2px solid #888;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 900;
+            cursor: pointer;
+            position: relative;
+            touch-action: none;
+            color: #111;
+        }
+        .player-side.single-mode .dock-slot {
+            width: 44px;
+            height: 52px;
+            font-size: 20px;
+            border-radius: 8px;
+        }
+        .dock-slot.selected {
+            border: 3px solid #ff5722;
+            background: #fff3e0;
+        }
+        .dock-slot .badge {
+            position: absolute;
+            top: 0px;
+            right: 1px;
+            font-size: 9px;
+            font-weight: bold;
+            color: #d84315;
+            pointer-events: none;
+        }
+        .player-side.single-mode .dock-slot .badge {
+            font-size: 11px;
+            top: 1px;
+            right: 2px;
+        }
+        .controls-box {
+            display: flex;
+            gap: 6px;
+            width: 100%;
+            justify-content: center;
+            margin-top: 4px;
+        }
+        button.btn {
+            background: #607d8b;
+            color: #fff;
+            border: 2px solid #37474f;
+            padding: 5px 14px;
+            font-size: 13px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 2px 0 #263238;
+            touch-action: manipulation;
+        }
+        .player-side.single-mode button.btn {
+            padding: 8px 22px;
+            font-size: 15px;
+            border-radius: 8px;
+        }
+        button.btn:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+        button.btn:disabled {
+            background: #a0a0a0;
+            border-color: #666;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.78);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            touch-action: auto;
+        }
+        .modal-card {
+            background: #fdfae7;
+            border: 4px solid #4a6741;
+            border-radius: 16px;
+            padding: 20px;
+            max-width: 580px;
+            width: 92%;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+            line-height: 1.5;
+            text-align: center;
+            position: relative;
+        }
+
+        #tower-view {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background:
+                radial-gradient(circle at 50% 16%, rgba(155, 205, 120, 0.22) 0 8%, transparent 34%),
+                radial-gradient(circle at 12% 78%, rgba(89, 130, 62, 0.25) 0 10%, transparent 34%),
+                radial-gradient(circle at 88% 68%, rgba(54, 92, 38, 0.35) 0 12%, transparent 36%),
+                linear-gradient(180deg, #31572b 0%, #1e3a1c 42%, #102411 100%);
+            z-index: 100;
+            overflow: hidden;
+            touch-action: none;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px 10px;
+            isolation: isolate;
+        }
+        /* 神木爬塔頁專用的環境層：只豐富「選關畫面」，不會影響戰鬥 Canvas。 */
+        #tower-view::before {
+            content: '';
+            position: absolute;
+            inset: -12%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.95;
+            background:
+                radial-gradient(circle at 8% 22%, rgba(214, 238, 164, 0.78) 0 2px, transparent 3px),
+                radial-gradient(circle at 19% 74%, rgba(214, 238, 164, 0.58) 0 2px, transparent 3px),
+                radial-gradient(circle at 34% 38%, rgba(214, 238, 164, 0.48) 0 2px, transparent 3px),
+                radial-gradient(circle at 76% 27%, rgba(214, 238, 164, 0.62) 0 2px, transparent 3px),
+                radial-gradient(circle at 91% 61%, rgba(214, 238, 164, 0.48) 0 2px, transparent 3px),
+                radial-gradient(circle at 64% 84%, rgba(214, 238, 164, 0.45) 0 2px, transparent 3px),
+                linear-gradient(90deg,
+                    rgba(7, 21, 8, 0.96) 0 8%,
+                    transparent 8% 18%,
+                    rgba(7, 21, 8, 0.72) 18% 21%,
+                    transparent 21% 79%,
+                    rgba(7, 21, 8, 0.72) 79% 82%,
+                    transparent 82% 92%,
+                    rgba(7, 21, 8, 0.96) 92% 100%);
+            filter: blur(0.15px);
+            animation: towerFireflies 8s ease-in-out infinite alternate;
+        }
+        #tower-view::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background:
+                linear-gradient(90deg, rgba(10, 28, 10, 0.92), transparent 18%, transparent 82%, rgba(10, 28, 10, 0.92)),
+                radial-gradient(ellipse at 50% 110%, rgba(6, 18, 7, 0.78) 0 34%, transparent 66%),
+                linear-gradient(180deg, transparent 0 68%, rgba(9, 26, 10, 0.24) 100%);
+        }
+        @keyframes towerFireflies {
+            0% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.70; }
+            50% { transform: translate3d(0, -8px, 0) scale(1.015); opacity: 0.92; }
+            100% { transform: translate3d(4px, 2px, 0) scale(1); opacity: 0.76; }
+        }
+        .tower-header-panel {
+            background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(232,243,221,0.93));
+            border: 3px solid #2e4d25;
+            border-radius: 14px;
+            padding: 8px 20px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.38), 0 0 0 2px rgba(214, 239, 178, 0.18);
+            z-index: 30;
+            position: relative;
+        }
+        .tower-viewport-container {
+            position: relative;
+            width: 100%;
+            max-width: 440px;
+            flex: 1;
+            overflow: hidden;
+            margin: 8px 0;
+            border-radius: 16px;
+            box-shadow: 0 10px 28px rgba(0,0,0,0.38), inset 0 0 20px rgba(0,0,0,0.7), 0 0 0 1px rgba(197, 226, 163, 0.16);
+            z-index: 10;
+        }
+        .tower-map-area {
+            position: absolute;
+            width: 100%;
+            height: 12200px;
+            top: 0;
+            left: 0;
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        #tower-svg-paths {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        #tower-fog-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 260px;
+            background: linear-gradient(180deg, rgba(16, 26, 16, 1) 0%, rgba(24, 38, 22, 0.95) 50%, rgba(30, 48, 26, 0.7) 80%, rgba(30, 48, 26, 0) 100%);
+            pointer-events: none;
+            z-index: 25;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .tower-stage-node {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            width: 104px;
+            height: 52px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ffca28 0%, #f57c00 100%);
+            border: 3px solid #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 900;
+            color: #fff;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.45);
+            cursor: pointer;
+            z-index: 5;
+            transition: transform 0.15s ease, filter 0.15s ease;
+            touch-action: manipulation;
+        }
+        .tower-stage-node.special-stage {
+            background: linear-gradient(135deg, #8d5b4c 0%, #5d3a29 100%) !important;
+            border: 4px solid #d7ccc8 !important;
+            box-shadow: 0 0 16px rgba(141, 91, 76, 0.8), 0 6px 14px rgba(0,0,0,0.6) !important;
+        }
+        .tower-stage-node:active {
+            transform: translate(-50%, -50%) scale(0.94);
+        }
+        .tower-stage-node.locked {
+            background: linear-gradient(135deg, #8d99ae 0%, #4a5568 100%);
+            border-color: #cbd5e1;
+            cursor: not-allowed;
+            filter: grayscale(0.85);
+            opacity: 0.75;
+        }
+        .tower-stage-node.special-stage.locked {
+            background: linear-gradient(135deg, #5c4033 0%, #3a2720 100%) !important;
+            border-color: #8d6e63 !important;
+            filter: grayscale(0.85);
+            opacity: 0.75;
+        }
+        .stage-star-tray {
+            position: absolute;
+            bottom: -15px;
+            display: flex;
+            gap: 1px;
+            font-size: 12px;
+            color: #ffd700;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+            pointer-events: none;
+        }
+
+        #shop-float-btn {
+            display: none;
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #e91e63;
+            color: white;
+            border: 3px solid #fff;
+            border-radius: 50%;
+            width: 64px;
+            height: 64px;
+            font-size: 28px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+            cursor: pointer;
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            touch-action: manipulation;
+        }
+        #shop-modal { display: none; }
+        .shop-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            max-height: 66vh;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+        .shop-item-card {
+            background: #fff;
+            border: 2px solid #8bc34a;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: stretch;
+            gap: 8px;
+            min-height: 128px;
+        }
+        .shop-item-card b { font-size: 14px; }
+        .shop-buy-btn { width: 100%; }
+        .shop-buy-btn:disabled { opacity: 0.55; }
+
+        #battle-item-bar {
+            display: none;
+            position: fixed;
+            top: 92px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 150;
+            background: rgba(255,255,255,0.96);
+            border: 3px solid #4a6741;
+            border-radius: 12px;
+            padding: 6px 8px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.28);
+            gap: 5px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: min(96vw, 760px);
+        }
+        .battle-item-btn {
+            background: #5c6bc0;
+            color: #fff;
+            border: 2px solid #303f9f;
+            border-radius: 7px;
+            padding: 5px 8px;
+            font-size: 12px;
+            font-weight: 900;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+        .battle-item-btn:disabled {
+            background: #9e9e9e;
+            border-color: #757575;
+            cursor: not-allowed;
+        }
+
+        #trash-bin {
+            display: none;
+            position: fixed;
+            right: 24px;
+            bottom: 104px;
+            width: 86px;
+            height: 86px;
+            border-radius: 14px;
+            border: 4px solid #424242;
+            background: linear-gradient(180deg, #eeeeee, #bdbdbd);
+            color: #212121;
+            z-index: 210;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            font-weight: 900;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+            pointer-events: none;
+        }
+        #trash-bin.active-drop {
+            background: linear-gradient(180deg, #ffcdd2, #ef9a9a);
+            border-color: #c62828;
+            transform: scale(1.08);
+        }
+        @media (max-width: 760px) {
+            #battle-item-bar { top: 84px; }
+            #trash-bin { right: 8px; bottom: 90px; width: 74px; height: 74px; }
+            .shop-grid { grid-template-columns: 1fr; max-height: 62vh; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="landing-page">
+        <div class="landing-title">自然文字對決</div>
+        <div class="landing-subtitle">✦ 遠古神木爬塔 ✕ 三方陣地博弈 ✦</div>
+
+        <div class="landing-card">
+            <div class="instructions-box" id="mode-instructions">
+                <h3>🌲 主線爬塔模式說明</h3>
+                <ul>
+                    <li><b>10 秒準備：</b>每關開始先有 10 秒布陣與升等時間，倒數結束後敵人才會進犯。</li>
+                    <li><b>波次：</b>第 1 關 10 波，第 2 關 15 波，之後每關增加 5 波。</li>
+                    <li><b>首波補給：</b>第 1 波固定 4 隻敵人，全部擊破後可獲得抽牌補充。</li>
+                    <li><b>BOSS：</b>每 5 波出現首領，擁有暈眩、麻痺、冰凍、劇毒等特殊技能。</li>
+                    <li><b>爬塔：</b>共 100 關，通關可依剩餘生命取得 1～3 星與金幣獎勵。</li>
+                    <li><b>關卡商店：</b>第 5 關開始，只有在關卡結束後才能進入商店購買特殊道具。</li>
+                </ul>
+            </div>
+
+            <div class="mode-selection-zone">
+                <div class="mode-tabs">
+                    <button type="button" class="mode-tab-btn active" id="btn-tab-tower">🌲 主線爬塔模式</button>
+                    <button type="button" class="mode-tab-btn" id="btn-tab-pk">⚔️ 多人 PK 競技場</button>
+                </div>
+
+                <div id="landing-tower-panel" class="mode-detail-panel">
+                    <p style="margin:0 0 6px 0;"><b>【主線規則】：</b>第 1 關 10 波，第 2 關 15 波，每關遞增 5 波，總共一百關！</p>
+                    <p style="margin:0 0 6px 0;"><b>【星級評價】：</b>滿血 5 格 3 星(30金幣)、4 格 2 星(20金幣)、其餘 1 星(10金幣)。</p>
+                    <p style="margin:0 0 12px 0;"><b>【關卡商店】：</b>第 5 關起，每關結束後開放行腳商，可用金幣購買道具！</p>
+                    <div style="text-align: center;">
+                        <button class="btn" id="btn-enter-tower" style="padding: 10px 28px; font-size: 16px; background: #2e7d32;">啟程・進入神木塔</button>
+                    </div>
+                </div>
+
+                <div id="landing-pk-panel" class="mode-detail-panel" style="display: none;">
+                    <div class="instructions-box" style="margin-bottom:12px; background:#fff8ef; border-color:#ffcc80;">
+                        <h3 style="color:#e65100;">⚔️ 多人 PK 競技場說明</h3>
+                        <ul>
+                            <li><b>10 秒準備：</b>開局先有 10 秒自由布陣與升等時間，之後進入戰鬥。</li>
+                            <li><b>前 10 波保護：</b>第 1～10 波絕對不會觸發狂暴模式。</li>
+                            <li><b>狂暴模式：</b>第 11 波開始才可能隨機觸發，會增加敵人數量與首領強度。</li>
+                            <li><b>對決人數：</b>支援 2 人或 3 人混戰。</li>
+                            <li><b>操控方式：</b>玩家 2、玩家 3 可各自選擇真人或 AI 電腦。</li>
+                            <li><b>勝負：</b>敵方陣地失守或只剩一方存活時結束戰鬥。</li>
+                        </ul>
+                    </div>
+                    <p style="margin:0 0 10px 0;"><b>【競技配置】：</b>支援最高 3 人對決，可獨立挑選真人或 AI 電腦！</p>
+                    <div style="margin-bottom: 8px;">
+                        <b>對決人數：</b>
+                        <label><input type="radio" name="landing-pk-count" value="2" checked> 雙人單挑</label>
+                        <label style="margin-left: 12px;"><input type="radio" name="landing-pk-count" value="3"> 三人混戰</label>
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <b>玩家 2 操控者：</b>
+                        <select id="landing-p2-select" style="padding: 3px 6px; border-radius: 4px;">
+                            <option value="ai">🤖 電腦 AI</option>
+                            <option value="human">👤 真人玩家</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 12px;" id="landing-p3-box">
+                        <b>玩家 3 操控者：</b>
+                        <select id="landing-p3-select" style="padding: 3px 6px; border-radius: 4px;">
+                            <option value="ai">🤖 電腦 AI</option>
+                            <option value="human">👤 真人玩家</option>
+                        </select>
+                    </div>
+                    <div style="text-align: center;">
+                        <button class="btn" id="btn-enter-pk" style="padding: 10px 28px; font-size: 16px; background: #e65100;">開始 PK 對決！</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="raid-banner">⚠️ 警告：滅世級狂暴獸潮突襲！⚠️</div>
+
+    <div id="top-bar">
+        <span id="game-mode-badge">🌱 景觀加載中...</span>
+        <span id="wave-counter">第 1 波次</span>
+        <span id="countdown-banner" style="color: #d84315;"></span>
+        <span class="gold-display" id="gold-counter">💰 金幣: 0</span>
+        <button class="top-btn" id="pause-btn">⏸️ 暫停</button>
+        <button class="top-btn" id="return-menu-btn">🚪 選單</button>
+        <button class="top-btn" id="audio-toggle-btn">🔊 音效：開</button>
+    </div>
+
+    <div id="game-arena">
+        <div class="player-side" id="p1-side">
+            <div class="side-header">
+                <span id="p1-title">玩家 1</span>
+                <span id="p1-stats">❤️ 5 | 擊殺: 0</span>
+            </div>
+            <canvas id="canvas-p1" width="315" height="450"></canvas>
+            <div class="dock-container" id="p1-dock-box">
+                <div class="dock-slots" id="p1-dock"></div>
+                <div class="controls-box">
+                    <button id="p1-golden-shovel-slot" type="button" aria-label="金色鏟子，可拖曳使用">⛏️<br>×0</button>
+                    <button class="btn" id="p1-summon-btn">重抽補滿 (1/1)</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="player-side" id="p2-side">
+            <div class="side-header">
+                <span id="p2-title">玩家 2 (電腦)</span>
+                <span id="p2-stats">❤️ 5 | 擊殺: 0</span>
+            </div>
+            <canvas id="canvas-p2" width="315" height="450"></canvas>
+            <div class="dock-container" id="p2-dock-box">
+                <div class="dock-slots" id="p2-dock"></div>
+                <div class="controls-box">
+                    <button class="btn" id="p2-summon-btn">重抽補滿 (1/1)</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="player-side" id="p3-side" style="display:none;">
+            <div class="side-header">
+                <span id="p3-title">玩家 3 (電腦)</span>
+                <span id="p3-stats">❤️ 5 | 擊殺: 0</span>
+            </div>
+            <canvas id="canvas-p3" width="315" height="450"></canvas>
+            <div class="dock-container" id="p3-dock-box">
+                <div class="dock-slots" id="p3-dock"></div>
+                <div class="controls-box">
+                    <button class="btn" id="p3-summon-btn">重抽補滿 (1/1)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tower-view">
+        <div class="tower-header-panel">
+            <div style="font-size: 20px; font-weight: 900; color: #1b3b14;">🌲 遠古神木・百階試煉 (共 100 關) 🗺️</div>
+            <div style="font-size: 13px; color: #4e6b3e;">霧靄重重籠罩高處，唯有一步步通關方能驅散迷霧破層而上！</div>
+        </div>
+
+        <div class="tower-viewport-container" id="tower-viewport">
+            <div id="tower-fog-overlay"></div>
+            <div class="tower-map-area" id="tower-map-area">
+                <svg id="tower-svg-paths"></svg>
+            </div>
+        </div>
+
+        <div style="margin-top: 10px; z-index: 30;">
+            <button class="btn" id="tower-back-btn" style="padding: 8px 24px; font-size: 15px;">返回首頁</button>
+        </div>
+    </div>
+
+    <div id="gameover-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-card">
+            <h2 id="gameover-title" style="margin-top:0; color:#2e4d25;">戰鬥結算</h2>
+            <div id="gameover-stars" style="font-size: 34px; color: #ffd700; margin: 8px 0;"></div>
+            <p id="gameover-desc" style="font-size: 15px; color: #444;"></p>
+            <button class="btn" id="postbattle-shop-btn" style="font-size: 15px; padding: 8px 24px; background:#e65100;">🛒 進入商店</button>
+            <button class="btn" id="gameover-confirm-btn" style="font-size: 15px; padding: 8px 24px;">確認繼續</button>
+        </div>
+    </div>
+
+    <div id="shop-float-btn">🛍️</div>
+    <div id="trash-bin">🗑️<div style="font-size:11px;">拖入丟棄</div></div>
+    <div id="battle-item-bar">
+        <button class="battle-item-btn" id="item-poison-btn" disabled>☠️ 毒藥</button>
+        <button class="battle-item-btn" id="item-ice-btn" disabled>❄️ 冰河時期</button>
+        <button class="battle-item-btn" id="item-volcano-btn" disabled>🌋 火山爆發</button>
+        <span id="item-status-text" style="display:inline-flex;align-items:center;padding:0 5px;font-size:12px;font-weight:900;color:#4a6741;">商店道具</span>
+    </div>
+    <div id="pause-overlay" class="modal-overlay">
+        <div class="modal-card">
+            <h2 style="margin-top:0;color:#2e4d25;">⏸️ 遊戲暫停</h2>
+            <p style="color:#555;">戰鬥已暫停，敵人不會移動或生成。</p>
+            <button class="btn" id="resume-btn" style="font-size:15px;padding:8px 24px;background:#2e7d32;">▶️ 繼續遊戲</button>
+        </div>
+    </div>
+    <div id="shop-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h2 style="margin-top:0; color:#2e4d25;">🛒 叢林補給行腳商</h2>
+            <p style="font-size: 12px; color: #666;">第五關起開放；所有道具皆為 150 金幣，本關購買後只在本關生效。</p>
+            <div class="shop-grid">
+                <div class="shop-item-card">
+                    <div style="text-align:left;"><b>🗑️ 垃圾桶</b><br><span style="font-size:12px;color:#777;">購買後顯示垃圾桶，可將戰場上的生物或工具直接拖曳丟棄。</span></div>
+                    <button class="btn shop-buy-btn" id="buy-trash-btn">150 金幣</button>
+                </div>
+                <div class="shop-item-card">
+                    <div style="text-align:left;"><b>🚜 推土機</b><br><span style="font-size:12px;color:#777;">安裝在帳篷前。生物即將進入最終陣地時自動啟動，清除場上所有敵人，含 Boss。</span></div>
+                    <button class="btn shop-buy-btn" id="buy-bulldozer-btn">150 金幣</button>
+                </div>
+                <div class="shop-item-card">
+                    <div style="text-align:left;"><b>☠️ 毒藥</b><br><span style="font-size:12px;color:#777;">接下來 5 波：敵人生命力與攻擊力減半，但移動速度提高。</span></div>
+                    <button class="btn shop-buy-btn" id="buy-poison-btn">150 金幣</button>
+                </div>
+                <div class="shop-item-card">
+                    <div style="text-align:left;"><b>❄️ 冰河時期</b><br><span style="font-size:12px;color:#777;">立即凍結畫面上所有敵人，使其停止移動直到死亡。</span></div>
+                    <button class="btn shop-buy-btn" id="buy-ice-btn">150 金幣</button>
+                </div>
+                <div class="shop-item-card">
+                    <div style="text-align:left;"><b>⛏️ 額外鏟子</b><br><span style="font-size:12px;color:#777;">本關立即額外獲得 2 把鏟子。</span></div>
+                    <button class="btn shop-buy-btn" id="buy-extra-shovel-btn">150 金幣</button>
+                </div>
+                <div class="shop-item-card">
+                    <div style="text-align:left;"><b>🌋 火山爆發</b><br><span style="font-size:12px;color:#777;">30 秒內全部敵方移動格變為岩漿地，每秒對敵人造成巨量傷害。</span></div>
+                    <button class="btn shop-buy-btn" id="buy-volcano-btn">150 金幣</button>
+                </div>
+            </div>
+            <button class="btn" id="close-shop-btn" style="margin-top:12px;background:#607d8b;">關閉補給站</button>
+        </div>
+    </div>
+
+    <script>
+        class SoundEngine {
+            constructor() {
+                this.ctx = null;
+                this.enabled = true;
+                this.bgmTimer = null;
+                this.bgmStep = 0;
+                this.melody = [174.61, 196.00, 207.65, 261.63, 233.08, 261.63, 311.13, 349.23, 261.63, 207.65, 233.08, 196.00];
+                this.bass = [87.31, 103.83, 116.54, 87.31];
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioCtx();
+                }
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+                this.startBGM();
+            }
+
+            startBGM() {
+                if (this.bgmTimer) return;
+                this.bgmTimer = setInterval(() => {
+                    if (!this.enabled || !this.ctx || !gameStarted || isGameOver) return;
+                    let t = this.ctx.currentTime;
+
+                    let osc = this.ctx.createOscillator();
+                    let gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    let freq = this.melody[this.bgmStep % this.melody.length];
+                    osc.frequency.setValueAtTime(freq, t);
+
+                    gain.gain.setValueAtTime(0.04, t);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(t);
+                    osc.stop(t + 0.3);
+
+                    if (this.bgmStep % 4 === 0) {
+                        let bassOsc = this.ctx.createOscillator();
+                        let bassGain = this.ctx.createGain();
+                        bassOsc.type = 'triangle';
+                        let bFreq = this.bass[Math.floor(this.bgmStep / 4) % this.bass.length];
+                        bassOsc.frequency.setValueAtTime(bFreq, t);
+
+                        bassGain.gain.setValueAtTime(0.06, t);
+                        bassGain.gain.exponentialRampToValueAtTime(0.001, t + 0.55);
+
+                        bassOsc.connect(bassGain);
+                        bassGain.connect(this.ctx.destination);
+                        bassOsc.start(t);
+                        bassOsc.stop(t + 0.6);
+                    }
+
+                    this.bgmStep++;
+                }, 320);
+            }
+
+            playPop() {
+                if (!this.enabled || !this.ctx) return;
+                let t = this.ctx.currentTime;
+                let osc = this.ctx.createOscillator();
+                let gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(320, t);
+                osc.frequency.exponentialRampToValueAtTime(650, t + 0.08);
+
+                gain.gain.setValueAtTime(0.12, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(t);
+                osc.stop(t + 0.09);
+            }
+
+            playShovel() {
+                if (!this.enabled || !this.ctx) return;
+                let t = this.ctx.currentTime;
+                let osc = this.ctx.createOscillator();
+                let gain = this.ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(140, t);
+                osc.frequency.linearRampToValueAtTime(80, t + 0.12);
+
+                gain.gain.setValueAtTime(0.18, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(t);
+                osc.stop(t + 0.13);
+            }
+
+            playCombine() {
+                if (!this.enabled || !this.ctx) return;
+                let t = this.ctx.currentTime;
+                [440, 554.37, 659.25, 880].forEach((freq, i) => {
+                    let osc = this.ctx.createOscillator();
+                    let gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, t + i * 0.05);
+
+                    gain.gain.setValueAtTime(0.12, t + i * 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + i * 0.05 + 0.22);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(t + i * 0.05);
+                    osc.stop(t + i * 0.05 + 0.24);
+                });
+            }
+
+            playLevelUp() {
+                if (!this.enabled || !this.ctx) return;
+                let t = this.ctx.currentTime;
+                [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
+                    let osc = this.ctx.createOscillator();
+                    let gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, t + i * 0.06);
+
+                    gain.gain.setValueAtTime(0.14, t + i * 0.06);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + i * 0.06 + 0.25);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(t + i * 0.06);
+                    osc.stop(t + i * 0.06 + 0.26);
+                });
+            }
+
+            playAttack(type) {
+                if (!this.enabled || !this.ctx) return;
+                let t = this.ctx.currentTime;
+                let osc = this.ctx.createOscillator();
+                let gain = this.ctx.createGain();
+
+                if (type === 'slash') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(450, t);
+                    osc.frequency.exponentialRampToValueAtTime(120, t + 0.08);
+                    gain.gain.setValueAtTime(0.12, t);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+                } else if (type === 'spit') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, t);
+                    osc.frequency.exponentialRampToValueAtTime(250, t + 0.1);
+                    gain.gain.setValueAtTime(0.10, t);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+                } else {
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(160, t);
+                    osc.frequency.exponentialRampToValueAtTime(40, t + 0.12);
+                    gain.gain.setValueAtTime(0.12, t);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+                }
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(t);
+                osc.stop(t + 0.13);
+            }
+
+            playBurst() {
+                if (!this.enabled || !this.ctx) return;
+                let t = this.ctx.currentTime;
+                let osc = this.ctx.createOscillator();
+                let gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(700, t);
+                osc.frequency.exponentialRampToValueAtTime(60, t + 0.22);
+
+                gain.gain.setValueAtTime(0.2, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(t);
+                osc.stop(t + 0.24);
+            }
+
+            playAoE() {
+                if (!this.enabled || !this.ctx) return;
+                let t = this.ctx.currentTime;
+                let osc = this.ctx.createOscillator();
+                let gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(180, t);
+                osc.frequency.exponentialRampToValueAtTime(420, t + 0.18);
+
+                gain.gain.setValueAtTime(0.18, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(t);
+                osc.stop(t + 0.26);
+            }
+
+            playRaidAlert() {
+                if (!this.enabled || !this.ctx) return;
+                let t = this.ctx.currentTime;
+                [220, 311.13, 220, 311.13].forEach((f, i) => {
+                    let osc = this.ctx.createOscillator();
+                    let gain = this.ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(f, t + i * 0.12);
+                    gain.gain.setValueAtTime(0.16, t + i * 0.12);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + i * 0.12 + 0.1);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(t + i * 0.12);
+                    osc.stop(t + i * 0.12 + 0.11);
+                });
+            }
+        }
+
+        const sound = new SoundEngine();
+
+        const COLS = 7;
+        const ROWS = 10;
+        const DOCK_SIZE = 9;
+
+        const MAP_PRESETS = [
+            {
+                name: "玄武岩",
+                bodyBg: "#3e3a37",
+                arenaBg: "#2e2926",
+                sideBg: "#e3dedb",
+                headerBg: "#cfc6c0",
+                pathBg: "#e0d7ce",
+                pathBorder: "#8d7b6f",
+                lockedBg: "#827870",
+                lockedBorder: "#544941",
+                openBg: "#fdf7ea",
+                openBorder: "#475569",
+                btnBg: "#63564d",
+                btnBorder: "#382e28",
+                enemies: [
+                    { name: "蜥", hpScale: 1.0, baseSpd: 0.024 },
+                    { name: "蠍", hpScale: 1.2, baseSpd: 0.021 },
+                    { name: "蝠", hpScale: 0.8, baseSpd: 0.028 },
+                    { name: "駱", hpScale: 2.0, baseSpd: 0.016 },
+                    { name: "隼", hpScale: 1.1, baseSpd: 0.026 }
+                ],
+                boss: { name: "雕", title: "玄武巨雕", skill: "地裂岩崩", hp: 600, baseSpd: 0.010, effect: "stun" },
+                path: [
+                    {r: 0, c: 6}, {r: 1, c: 6}, {r: 2, c: 6}, {r: 2, c: 5}, {r: 2, c: 4}, {r: 2, c: 3}, {r: 2, c: 2}, {r: 2, c: 1},
+                    {r: 3, c: 1}, {r: 4, c: 1}, {r: 4, c: 2}, {r: 4, c: 3}, {r: 4, c: 4}, {r: 4, c: 5},
+                    {r: 5, c: 5}, {r: 6, c: 5}, {r: 6, c: 4}, {r: 6, c: 3}, {r: 6, c: 2}, {r: 6, c: 1},
+                    {r: 7, c: 1}, {r: 8, c: 1}, {r: 9, c: 1}, {r: 9, c: 2}, {r: 9, c: 3}, {r: 9, c: 4}, {r: 9, c: 5}
+                ],
+                initialOpens: [
+                    {r: 3, c: 3}, {r: 3, c: 4}, {r: 3, c: 5},
+                    {r: 5, c: 2}, {r: 5, c: 3}, {r: 5, c: 4}
+                ]
+            },
+            {
+                name: "大草原",
+                bodyBg: "#3d5735",
+                arenaBg: "#283d23",
+                sideBg: "#dce8c5",
+                headerBg: "#c2d69e",
+                pathBg: "#ecdcc3",
+                pathBorder: "#967f5b",
+                lockedBg: "#739958",
+                lockedBorder: "#344e25",
+                openBg: "#fdf7ea",
+                openBorder: "#475569",
+                btnBg: "#5c7e3f",
+                btnBorder: "#2a4216",
+                enemies: [
+                    { name: "鹿", hpScale: 1.0, baseSpd: 0.026 },
+                    { name: "馬", hpScale: 1.2, baseSpd: 0.027 },
+                    { name: "羊", hpScale: 1.1, baseSpd: 0.022 },
+                    { name: "犀", hpScale: 2.2, baseSpd: 0.015 },
+                    { name: "鴕", hpScale: 1.3, baseSpd: 0.029 }
+                ],
+                boss: { name: "象", title: "蠻荒巨象", skill: "蠻荒踐踏", hp: 650, baseSpd: 0.009, effect: "paralyze" },
+                path: [
+                    {r: 0, c: 6}, {r: 1, c: 6}, {r: 2, c: 6}, {r: 2, c: 5}, {r: 2, c: 4}, {r: 2, c: 3}, {r: 2, c: 2}, {r: 2, c: 1},
+                    {r: 3, c: 1}, {r: 4, c: 1}, {r: 5, c: 1}, {r: 6, c: 1}, {r: 6, c: 2}, {r: 6, c: 3}, {r: 6, c: 4}, {r: 6, c: 5},
+                    {r: 7, c: 5}, {r: 8, c: 5}, {r: 9, c: 5}, {r: 9, c: 4}, {r: 9, c: 3}, {r: 9, c: 2}, {r: 9, c: 1}, {r: 9, c: 0}
+                ],
+                initialOpens: [
+                    {r: 3, c: 2}, {r: 3, c: 3}, {r: 3, c: 4},
+                    {r: 4, c: 2}, {r: 4, c: 3}, {r: 4, c: 4}
+                ]
+            },
+            {
+                name: "冰川峽",
+                bodyBg: "#324347",
+                arenaBg: "#202d30",
+                sideBg: "#cedee0",
+                headerBg: "#b3c9cb",
+                pathBg: "#cde4e6",
+                pathBorder: "#78989c",
+                lockedBg: "#617d82",
+                lockedBorder: "#283e42",
+                openBg: "#fdf7ea",
+                openBorder: "#475569",
+                btnBg: "#4a6c73",
+                btnBorder: "#1e3438",
+                enemies: [
+                    { name: "企", hpScale: 1.0, baseSpd: 0.022 },
+                    { name: "豹", hpScale: 1.3, baseSpd: 0.025 },
+                    { name: "豚", hpScale: 1.2, baseSpd: 0.024 },
+                    { name: "象", hpScale: 2.1, baseSpd: 0.014 },
+                    { name: "狐", hpScale: 0.9, baseSpd: 0.028 }
+                ],
+                boss: { name: "熊", title: "北極巨熊", skill: "極寒冰封", hp: 700, baseSpd: 0.009, effect: "freeze" },
+                path: [
+                    {r: 0, c: 0}, {r: 1, c: 0}, {r: 2, c: 0}, {r: 3, c: 0}, {r: 4, c: 0}, {r: 5, c: 0}, {r: 6, c: 0}, {r: 7, c: 0}, {r: 8, c: 0}, {r: 9, c: 0},
+                    {r: 9, c: 1}, {r: 9, c: 2}, {r: 9, c: 3}, {r: 9, c: 4}, {r: 9, c: 5}, {r: 9, c: 6},
+                    {r: 8, c: 6}, {r: 7, c: 6}, {r: 6, c: 6}, {r: 5, c: 6}, {r: 4, c: 6}, {r: 3, c: 6}, {r: 2, c: 6}, {r: 1, c: 6}, {r: 0, c: 6},
+                    {r: 0, c: 5}, {r: 0, c: 4}, {r: 0, c: 3}, {r: 1, c: 3}, {r: 2, c: 3}, {r: 3, c: 3}, {r: 4, c: 3}, {r: 5, c: 3}
+                ],
+                initialOpens: [
+                    {r: 2, c: 1}, {r: 2, c: 2}, {r: 3, c: 1},
+                    {r: 3, c: 2}, {r: 4, c: 1}, {r: 4, c: 2}
+                ]
+            },
+            {
+                name: "晚霞澤",
+                bodyBg: "#4f3b49",
+                arenaBg: "#362432",
+                sideBg: "#eddce8",
+                headerBg: "#dbc2d4",
+                pathBg: "#edd6e7",
+                pathBorder: "#9c7295",
+                lockedBg: "#8f6885",
+                lockedBorder: "#4a2942",
+                openBg: "#fdf7ea",
+                openBorder: "#475569",
+                btnBg: "#7a486d",
+                btnBorder: "#3d1b34",
+                enemies: [
+                    { name: "蟾", hpScale: 1.1, baseSpd: 0.021 },
+                    { name: "鱉", hpScale: 1.8, baseSpd: 0.015 },
+                    { name: "鰻", hpScale: 0.9, baseSpd: 0.028 },
+                    { name: "蟹", hpScale: 1.3, baseSpd: 0.022 },
+                    { name: "鷺", hpScale: 1.0, baseSpd: 0.025 }
+                ],
+                boss: { name: "鱷", title: "沼澤巨鱷", skill: "劇毒翻滾", hp: 650, baseSpd: 0.010, effect: "poison" },
+                path: [
+                    {r: 0, c: 6}, {r: 1, c: 6}, {r: 2, c: 6}, {r: 3, c: 6}, {r: 3, c: 5}, {r: 3, c: 4}, {r: 3, c: 3}, {r: 3, c: 2}, {r: 3, c: 1}, {r: 3, c: 0},
+                    {r: 4, c: 0},
+                    {r: 5, c: 0}, {r: 5, c: 1}, {r: 5, c: 2}, {r: 5, c: 3}, {r: 5, c: 4}, {r: 5, c: 5}, {r: 5, c: 6},
+                    {r: 6, c: 6}, {r: 7, c: 6}, {r: 8, c: 6}, {r: 9, c: 6}, {r: 9, c: 5}, {r: 9, c: 4}, {r: 9, c: 3}, {r: 9, c: 2}, {r: 9, c: 1}, {r: 9, c: 0}
+                ],
+                initialOpens: [
+                    {r: 1, c: 2}, {r: 1, c: 3}, {r: 1, c: 4},
+                    {r: 7, c: 2}, {r: 7, c: 3}, {r: 7, c: 4}
+                ]
+            }
+        ];
+
+        let currentMapIndex = 0;
+        let selectedMap = MAP_PRESETS[currentMapIndex];
+
+        function switchMapToDifferent() {
+            let nextIndex;
+            do {
+                nextIndex = Math.floor(Math.random() * MAP_PRESETS.length);
+            } while (nextIndex === currentMapIndex);
+            currentMapIndex = nextIndex;
+            selectedMap = MAP_PRESETS[currentMapIndex];
+            applyTheme(selectedMap);
+        }
+
+        function applyTheme(mapData) {
+            document.body.style.background = mapData.bodyBg;
+            document.getElementById('game-arena').style.background = mapData.arenaBg;
+
+            ['p1-side', 'p2-side', 'p3-side'].forEach(id => {
+                let el = document.getElementById(id);
+                if (el) {
+                    el.style.background = mapData.sideBg;
+                    el.style.borderColor = mapData.openBorder;
+                }
+            });
+
+            document.querySelectorAll('.side-header').forEach(el => {
+                el.style.background = mapData.headerBg;
+                el.style.color = mapData.openBorder;
+            });
+
+            document.querySelectorAll('.dock-container').forEach(el => {
+                el.style.borderColor = mapData.btnBg;
+            });
+
+            document.querySelectorAll('button.btn').forEach(btn => {
+                btn.style.background = mapData.btnBg;
+                btn.style.borderColor = mapData.btnBorder;
+            });
+        }
+
+        const BASE_UNITS = {
+            "螳": { name: "螳", dist: "近戰", r: 1.5, baseSpd: 38 },
+            "蛛": { name: "蛛", dist: "中程", r: 2, baseSpd: 40 },
+            "熊": { name: "熊", dist: "中遠程", r: 3, baseSpd: 40 },
+            "鳥": { name: "鳥", dist: "遠程", r: 4, baseSpd: 40 }
+        };
+
+        const SPECIES = [
+            { name: "青蛇", words: ["青", "蛇"], r: 1.5, baseSpd: 38, skill: "毒牙撕咬", skillType: "single_burst", dmgMult: 3.5 },
+            { name: "獵豹", words: ["獵", "豹"], r: 1.5, baseSpd: 36, skill: "極速狂爪", skillType: "single_burst", dmgMult: 3.8 },
+            { name: "老虎", words: ["老", "虎"], r: 1.5, baseSpd: 38, skill: "猛虎裂骨", skillType: "single_burst", dmgMult: 4.0 },
+            { name: "老鼠", words: ["老", "鼠"], r: 1.5, baseSpd: 36, skill: "疾齒鑽心", skillType: "single_burst", dmgMult: 3.2 },
+            { name: "獅子", words: ["獅", "子"], r: 1.5, baseSpd: 38, skill: "雄獅暴殺", skillType: "single_burst", dmgMult: 4.0 },
+            { name: "野貓", words: ["野", "貓"], r: 1.5, baseSpd: 38, skill: "利爪碎甲", skillType: "single_burst", dmgMult: 3.4 },
+            { name: "豹貓", words: ["豹", "貓"], r: 1.5, baseSpd: 36, skill: "獵殺本能", skillType: "single_burst", dmgMult: 3.6 },
+            { name: "虎貓", words: ["虎", "貓"], r: 1.5, baseSpd: 38, skill: "斑紋狂襲", skillType: "single_burst", dmgMult: 3.5 },
+
+            { name: "灰狼", words: ["灰", "狼"], r: 2, baseSpd: 40, skill: "狼嚎烈衝", skillType: "medium_aoe", aoeRadius: 2.0, dmgMult: 2.2 },
+            { name: "青蛙", words: ["青", "蛙"], r: 2, baseSpd: 38, skill: "劇毒水浪", skillType: "medium_aoe", aoeRadius: 2.2, dmgMult: 2.0 },
+            { name: "野狼", words: ["野", "狼"], r: 2, baseSpd: 40, skill: "荒野酸風", skillType: "medium_aoe", aoeRadius: 2.0, dmgMult: 2.1 },
+            { name: "牛蛙", words: ["牛", "蛙"], r: 2, baseSpd: 42, skill: "泥石迸發", skillType: "medium_aoe", aoeRadius: 2.3, dmgMult: 2.2 },
+            { name: "水蛇", words: ["水", "蛇"], r: 2, baseSpd: 38, skill: "激流漩渦", skillType: "medium_aoe", aoeRadius: 2.2, dmgMult: 2.0 },
+            { name: "水蛙", words: ["水", "蛙"], r: 2, baseSpd: 40, skill: "連環水砲", skillType: "medium_aoe", aoeRadius: 2.2, dmgMult: 2.1 },
+            { name: "龍貓", words: ["龍", "貓"], r: 2, baseSpd: 38, skill: "幻氣震爆", skillType: "medium_aoe", aoeRadius: 2.2, dmgMult: 2.0 },
+
+            { name: "貓頭鷹", words: ["貓", "頭", "鷹"], r: 3, baseSpd: 40, skill: "羽刃天降", skillType: "large_aoe", aoeRadius: 3.5, dmgMult: 1.5 },
+            { name: "金魚", words: ["金", "魚"], r: 3, baseSpd: 40, skill: "波光飛彈", skillType: "large_aoe", aoeRadius: 3.5, dmgMult: 1.4 },
+            { name: "金龍魚", words: ["金", "龍", "魚"], r: 3, baseSpd: 38, skill: "金龍翻江", skillType: "large_aoe", aoeRadius: 3.8, dmgMult: 1.6 },
+
+            { name: "灰鷹", words: ["灰", "鷹"], r: 4, baseSpd: 40, skill: "蒼茫暴風", skillType: "huge_aoe", aoeRadius: 4.8, dmgMult: 1.2 },
+            { name: "獵鷹", words: ["獵", "鷹"], r: 4, baseSpd: 38, skill: "天鷹巡獵", skillType: "huge_aoe", aoeRadius: 4.8, dmgMult: 1.3 },
+            { name: "老鷹", words: ["老", "鷹"], r: 4, baseSpd: 40, skill: "神鷹破陣", skillType: "huge_aoe", aoeRadius: 5.0, dmgMult: 1.2 }
+        ];
+
+        const WORD_CHARS = ["灰", "狼", "鷹", "青", "蛇", "蛙", "獵", "豹", "貓", "頭", "老", "虎", "鼠", "獅", "子", "野", "牛", "金", "魚", "水", "龍"];
+
+        let gameMode = "tower";
+        let currentLevel = 1;
+        let highestUnlockedLevel = 1;
+        let levelStars = {};
+        let gold = 0;
+
+        let pkPlayerCount = 2;
+        let p2IsAi = true;
+        let p3IsAi = true;
+
+        let gameStarted = false;
+        let isGameOver = false;
+        let wave = 1;
+        let maxWavesForLevel = 10;
+        let waveTimer = 0;
+        let prepFrames = 600;
+        // 準備倒數改用真實經過時間，不再依賴 requestAnimationFrame 幀數。
+        let prepRemainingMs = 10000;
+        let prepLastTimestamp = 0;
+        let currentWaveRaid = false;
+        let raidCooldown = 0;
+        let shopOpen = false;
+        let isPaused = false;
+        let canOpenPostBattleShop = false;
+        let goldenShovelsForCurrentLevel = 0;
+        let goldenShovelBank = 0;
+
+        const SHOP_PRICE = 150;
+        let levelItems = {};
+        function resetLevelItems() {
+            levelItems = {
+                trash: false,
+                bulldozer: false,
+                bulldozerUsed: false,
+                poison: false,
+                poisonUsed: false,
+                poisonWavesRemaining: 0,
+                ice: false,
+                iceUsed: false,
+                extraShovel: false,
+                volcano: false,
+                volcanoUsed: false,
+                volcanoFrames: 0,
+                volcanoTick: 0,
+                bulldozerAnimFrames: 0
+            };
+        }
+
+        class PlayerState {
+            constructor(id, canvasId, dockId, statsId, btnId, sideId) {
+                this.id = id;
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.dockEl = document.getElementById(dockId);
+                this.statsEl = document.getElementById(statsId);
+                this.summonBtn = document.getElementById(btnId);
+                this.sideEl = document.getElementById(sideId);
+
+                this.cellW = this.canvas.width / COLS;
+                this.cellH = this.canvas.height / ROWS;
+
+                this.reset();
+                this.bindMultiTouchEvents();
+            }
+
+            setDimensions(w, h, isSingle) {
+                this.canvas.width = w;
+                this.canvas.height = h;
+                // 重新取得 context，並把 Canvas state 重設乾淨，避免跨關卡調整尺寸後殘留狀態。
+                this.ctx = this.canvas.getContext('2d');
+                if (this.ctx) {
+                    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+                    this.ctx.clearRect(0, 0, w, h);
+                }
+                this.cellW = w / COLS;
+                this.cellH = h / ROWS;
+                if (isSingle) {
+                    this.sideEl.classList.add('single-mode');
+                } else {
+                    this.sideEl.classList.remove('single-mode');
+                }
+            }
+
+            reset() {
+                this.hp = 5;
+                this.kills = 0;
+                this.availableDraws = 1;
+                this.waveKillCount = 0;
+                this.waveTargetKill = 0;
+                this.currentKillTarget = 4;
+                this.hasDrawnOnce = false;
+
+                this.speciesExperience = {};
+                this.grid = Array(ROWS).fill(null).map(() => Array(COLS).fill(null));
+                this.dock = Array(DOCK_SIZE).fill(null);
+                this.selectedDockIdx = null;
+
+                this.inspectedCell = null;
+                this.infoTips = [];
+                this.activePointers = {};
+
+                this.activeFormations = [];
+                this.enemies = [];
+                this.projectiles = [];
+                this.bodyLungeAnimations = [];
+                this.spawnQueue = [];
+
+                this.initField();
+                this.renderDock();
+            }
+
+            initField() {
+                let mapData = selectedMap || MAP_PRESETS[0];
+                for (let r = 0; r < ROWS; r++) {
+                    for (let c = 0; c < COLS; c++) {
+                        let isPath = mapData.path.some(p => p.r === r && p.c === c);
+                        this.grid[r][c] = { isPath: isPath, unlocked: false, unit: null };
+                    }
+                }
+                if (mapData.initialOpens && mapData.initialOpens.length > 0) {
+                    mapData.initialOpens.forEach(pos => {
+                        if (pos.r >= 0 && pos.r < ROWS && pos.c >= 0 && pos.c < COLS) {
+                            if (!this.grid[pos.r][pos.c].isPath) {
+                                this.grid[pos.r][pos.c].unlocked = true;
+                            }
+                        }
+                    });
+                }
+                let hasUnlocked = 0;
+                for (let r = 0; r < ROWS; r++) {
+                    for (let c = 0; c < COLS; c++) {
+                        if (this.grid[r][c].unlocked) hasUnlocked++;
+                    }
+                }
+                if (hasUnlocked === 0) {
+                    for (let r = 0; r < ROWS; r++) {
+                        for (let c = 0; c < COLS; c++) {
+                            if (!this.grid[r][c].isPath) {
+                                this.grid[r][c].unlocked = true;
+                                if (++hasUnlocked >= 6) break;
+                            }
+                        }
+                        if (hasUnlocked >= 6) break;
+                    }
+                }
+            }
+
+            renderDock() {
+                this.dockEl.innerHTML = '';
+                this.dock.forEach((item, idx) => {
+                    let slot = document.createElement('div');
+                    slot.className = 'dock-slot' + (this.selectedDockIdx === idx ? ' selected' : '');
+
+                    if (item) {
+                        if (item.type === 'tool') {
+                            slot.innerHTML = `<span>⛏️</span><span class="badge">鏟</span>`;
+                        } else if (item.type === 'base') {
+                            slot.innerHTML = `<span class="dock-base-name">${item.val}</span><span class="badge">Lv.${item.tier}</span>`;
+                        } else if (item.type === 'char') {
+                            slot.innerHTML = `<span class="dock-char-name">${item.val}</span><span class="badge">字</span>`;
+                        }
+                    }
+
+                    slot.addEventListener('pointerdown', (e) => {
+                        sound.init();
+                        if (isGameOver) return;
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        if (this.selectedDockIdx !== null && this.selectedDockIdx !== idx) {
+                            let src = this.dock[this.selectedDockIdx];
+                            let dst = this.dock[idx];
+                            if (src && dst && src.type === 'base' && dst.type === 'base' && src.val === dst.val && src.tier === dst.tier && dst.tier < 6) {
+                                dst.tier += 1;
+                                this.dock[this.selectedDockIdx] = null;
+                                this.selectedDockIdx = null;
+                                sound.playLevelUp();
+                                this.renderDock();
+                                return;
+                            } else if (src && dst) {
+                                let tmp = this.dock[this.selectedDockIdx];
+                                this.dock[this.selectedDockIdx] = this.dock[idx];
+                                this.dock[idx] = tmp;
+                                this.selectedDockIdx = null;
+                                sound.playPop();
+                                this.renderDock();
+                                return;
+                            }
+                        }
+
+                        if (!item) return;
+
+                        // 再次點擊目前已選取的欄位：取消選取並清除資訊提示
+                        if (this.selectedDockIdx === idx) {
+                            this.selectedDockIdx = null;
+                            this.inspectedCell = null;
+                            this.infoTips = [];
+                            delete this.activePointers[e.pointerId];
+                            this.renderDock();
+                            sound.playPop();
+                            return;
+                        }
+
+                        sound.playPop();
+
+                        let rect = this.canvas.getBoundingClientRect();
+                        this.activePointers[e.pointerId] = {
+                            source: 'dock',
+                            dockIdx: idx,
+                            item: item,
+                            startX: e.clientX,
+                            startY: e.clientY,
+                            canvasX: e.clientX - rect.left,
+                            canvasY: e.clientY - rect.top
+                        };
+
+                        this.selectedDockIdx = idx;
+                        this.inspectedCell = null;
+                        this.updateInfoTipForChar(item.val);
+                    });
+
+                    this.dockEl.appendChild(slot);
+                });
+            }
+
+            giveFreeShovel() {
+                let emptyIdx = this.dock.findIndex(d => !d);
+                if (emptyIdx !== -1) {
+                    this.dock[emptyIdx] = { type: 'tool', val: '鏟子' };
+                    sound.playPop();
+                    this.renderDock();
+                }
+            }
+
+            summon() {
+                sound.init();
+                if (this.availableDraws <= 0 || isGameOver) return;
+                this.availableDraws--;
+
+                this.dock = Array(DOCK_SIZE).fill(null);
+                this.selectedDockIdx = null;
+                sound.playPop();
+
+                let bases = ['螳', '蛛', '熊', '鳥'];
+                let shovelProb = (this.currentKillTarget > 50) ? 0.15 : 0.10;
+                let charProbEnd = shovelProb + 0.20;
+
+                if (!this.hasDrawnOnce) {
+                    this.hasDrawnOnce = true;
+                    this.dock[0] = { type: 'base', val: bases[Math.floor(Math.random() * bases.length)], tier: 1 };
+                    this.dock[1] = { type: 'base', val: bases[Math.floor(Math.random() * bases.length)], tier: 1 };
+                    this.dock[2] = { type: 'base', val: bases[Math.floor(Math.random() * bases.length)], tier: 1 };
+                    this.dock[3] = { type: 'tool', val: '鏟子' };
+                    this.dock[4] = { type: 'char', val: WORD_CHARS[Math.floor(Math.random() * WORD_CHARS.length)] };
+                    this.dock[5] = { type: 'char', val: WORD_CHARS[Math.floor(Math.random() * WORD_CHARS.length)] };
+
+                    for (let i = 6; i < DOCK_SIZE; i++) {
+                        let roll = Math.random();
+                        if (roll < shovelProb) {
+                            this.dock[i] = { type: 'tool', val: '鏟子' };
+                        } else if (roll < charProbEnd) {
+                            this.dock[i] = { type: 'char', val: WORD_CHARS[Math.floor(Math.random() * WORD_CHARS.length)] };
+                        } else {
+                            this.dock[i] = { type: 'base', val: bases[Math.floor(Math.random() * bases.length)], tier: 1 };
+                        }
+                    }
+                    this.dock.sort(() => Math.random() - 0.5);
+                } else {
+                    for (let i = 0; i < DOCK_SIZE; i++) {
+                        let roll = Math.random();
+                        if (roll < shovelProb) {
+                            this.dock[i] = { type: 'tool', val: '鏟子' };
+                        } else if (roll < charProbEnd) {
+                            let char = WORD_CHARS[Math.floor(Math.random() * WORD_CHARS.length)];
+                            this.dock[i] = { type: 'char', val: char };
+                        } else {
+                            let picked = bases[Math.floor(Math.random() * bases.length)];
+                            this.dock[i] = { type: 'base', val: picked, tier: 1 };
+                        }
+                    }
+                }
+                this.renderDock();
+            }
+
+            addKill() {
+                this.kills++;
+                this.waveKillCount++;
+
+                if (wave === 1 && this.waveKillCount >= this.waveTargetKill) {
+                    this.availableDraws++;
+                    sound.playLevelUp();
+                } else if (this.kills >= this.currentKillTarget) {
+                    this.availableDraws++;
+                    if (this.currentKillTarget >= 50) {
+                        this.currentKillTarget = Math.floor(this.currentKillTarget * 1.25) + 6;
+                    } else {
+                        this.currentKillTarget = this.currentKillTarget * 2;
+                    }
+                }
+            }
+
+            updateInfoTipForChar(char) {
+                if (!char) {
+                    this.infoTips = [];
+                    return;
+                }
+                let targets = [];
+                for (let sp of SPECIES) {
+                    if (sp.words.includes(char)) {
+                        targets.push(sp.name);
+                    }
+                }
+                if (targets.length > 0) {
+                    this.infoTips = [`可組生物：${targets.join('、')}`];
+                } else {
+                    this.infoTips = [];
+                }
+            }
+
+            discardGridUnit(r, c) {
+                const cell = this.grid[r] && this.grid[r][c];
+                if (!cell || !cell.unit) return false;
+                const unit = cell.unit;
+                if (unit.formation) {
+                    const form = unit.formation;
+                    for (const pos of form.cells) {
+                        if (this.grid[pos.r] && this.grid[pos.r][pos.c]) this.grid[pos.r][pos.c].unit = null;
+                    }
+                    this.activeFormations = this.activeFormations.filter(f => f !== form);
+                } else {
+                    cell.unit = null;
+                }
+                this.inspectedCell = null;
+                this.infoTips = [];
+                this.renderDock();
+                return true;
+            }
+
+            bindMultiTouchEvents() {
+                this.summonBtn.addEventListener('click', () => this.summon());
+
+                this.canvas.addEventListener('pointerdown', (e) => {
+                    sound.init();
+                    if (isGameOver) return;
+                    e.preventDefault();
+                    let rect = this.canvas.getBoundingClientRect();
+                    let cx = e.clientX - rect.left;
+                    let cy = e.clientY - rect.top;
+                    let c = Math.floor(cx / this.cellW);
+                    let r = Math.floor(cy / this.cellH);
+
+                    if (r >= 0 && r < ROWS && c >= 0 && c < COLS) {
+                        const cell = this.grid[r][c];
+
+                        if (gameMode === 'tower' && window.goldenShovelArmed && goldenShovelsForCurrentLevel > 0) {
+                            const wasUnlocked = this.grid[r][c].unlocked;
+                            this.applyPlacement(r, c, { type:'tool', val:'鏟子' }, null);
+                            if (!wasUnlocked && this.grid[r][c].unlocked) {
+                                goldenShovelsForCurrentLevel--;
+                                window.goldenShovelArmed = false;
+                                sound.playShovel();
+                                updateGoldenShovelUI();
+                            }
+                            return;
+                        }
+
+                        if (this.selectedDockIdx !== null) {
+                            this.applyPlacement(r, c, this.dock[this.selectedDockIdx], this.selectedDockIdx);
+                            this.selectedDockIdx = null;
+                            this.renderDock();
+                            this.detectFormations();
+                            return;
+                        }
+
+                        if (cell.unit) {
+                            sound.playPop();
+                            this.activePointers[e.pointerId] = {
+                                source: 'grid',
+                                r: r,
+                                c: c,
+                                unit: cell.unit,
+                                startX: e.clientX,
+                                startY: e.clientY,
+                                canvasX: cx,
+                                canvasY: cy
+                            };
+
+                            if (this.inspectedCell && this.inspectedCell.r === r && this.inspectedCell.c === c) {
+                                this.inspectedCell = null;
+                                this.infoTips = [];
+                            } else {
+                                this.inspectedCell = { r: r, c: c };
+                                if (cell.unit.formation) {
+                                    let f = cell.unit.formation;
+                                    let typeDesc = f.species.skillType === "single_burst" ? "【單體爆發】" : (f.species.skillType === "medium_aoe" ? "【中距扇形】" : "【大範圍轟炸】");
+                                    this.infoTips = [`【${f.species.name}】Lv.${f.level} 技能：${f.species.skill} ${typeDesc}`];
+                                } else if (cell.unit.kind === 'char') {
+                                    this.updateInfoTipForChar(cell.unit.name);
+                                } else {
+                                    this.infoTips = [];
+                                }
+                            }
+                        } else {
+                            this.inspectedCell = null;
+                            this.infoTips = [];
+                        }
+                    }
+                });
+
+                const goldenShovelBtn = document.getElementById('p1-golden-shovel-slot');
+                if (this.id === 1 && goldenShovelBtn) {
+                    goldenShovelBtn.addEventListener('pointerdown', (e) => {
+                        sound.init();
+                        if (gameMode !== 'tower' || isGameOver || isPaused || shopOpen || goldenShovelsForCurrentLevel <= 0 || !gameStarted) return;
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const rect = this.canvas.getBoundingClientRect();
+                        this.activePointers[e.pointerId] = {
+                            source: 'golden-shovel',
+                            item: { type: 'tool', val: '鏟子' },
+                            startX: e.clientX,
+                            startY: e.clientY,
+                            canvasX: e.clientX - rect.left,
+                            canvasY: e.clientY - rect.top
+                        };
+                        this.selectedDockIdx = null;
+                        this.inspectedCell = null;
+                        this.infoTips = [];
+                        if (goldenShovelBtn.setPointerCapture) {
+                            try { goldenShovelBtn.setPointerCapture(e.pointerId); } catch (err) {}
+                        }
+                    });
+                }
+
+                window.addEventListener('pointermove', (e) => {
+                    if (this.activePointers[e.pointerId]) {
+                        let ptr = this.activePointers[e.pointerId];
+                        let rect = this.canvas.getBoundingClientRect();
+                        ptr.canvasX = e.clientX - rect.left;
+                        ptr.canvasY = e.clientY - rect.top;
+                        const trashEl = document.getElementById('trash-bin');
+                        if (levelItems.trash && trashEl && trashEl.style.display !== 'none') {
+                            const tr = trashEl.getBoundingClientRect();
+                            const inside = e.clientX >= tr.left && e.clientX <= tr.right && e.clientY >= tr.top && e.clientY <= tr.bottom;
+                            trashEl.classList.toggle('active-drop', inside);
+                        }
+                    }
+                });
+
+                const handlePointerUp = (e) => {
+                    if (!this.activePointers[e.pointerId]) return;
+                    let ptr = this.activePointers[e.pointerId];
+                    delete this.activePointers[e.pointerId];
+
+                    let clientX = e.clientX;
+                    let clientY = e.clientY;
+
+                    const trashEl = document.getElementById('trash-bin');
+                    if (levelItems.trash && trashEl && trashEl.style.display !== 'none') {
+                        const trashRect = trashEl.getBoundingClientRect();
+                        const inTrash = clientX >= trashRect.left && clientX <= trashRect.right && clientY >= trashRect.top && clientY <= trashRect.bottom;
+                        if (inTrash) {
+                            if (ptr.source === 'dock') {
+                                this.dock[ptr.dockIdx] = null;
+                                this.selectedDockIdx = null;
+                                this.inspectedCell = null;
+                                this.infoTips = [];
+                                this.renderDock();
+                                sound.playPop();
+                            } else if (ptr.source === 'grid') {
+                                this.discardGridUnit(ptr.r, ptr.c);
+                                sound.playPop();
+                            }
+                            trashEl.classList.remove('active-drop');
+                            return;
+                        }
+                    }
+
+                    if (ptr.source === 'golden-shovel') {
+                        let rect = this.canvas.getBoundingClientRect();
+                        let targetC = Math.floor((clientX - rect.left) / this.cellW);
+                        let targetR = Math.floor((clientY - rect.top) / this.cellH);
+                        if (targetR >= 0 && targetR < ROWS && targetC >= 0 && targetC < COLS) {
+                            const beforeUnlocked = this.grid[targetR][targetC].unlocked;
+                            this.applyPlacement(targetR, targetC, ptr.item, null);
+                            if (!beforeUnlocked && this.grid[targetR][targetC].unlocked && goldenShovelsForCurrentLevel > 0) {
+                                goldenShovelsForCurrentLevel--;
+                                sound.playShovel();
+                                updateGoldenShovelUI();
+                            }
+                        }
+                        this.renderDock();
+                        this.detectFormations();
+                        return;
+                    }
+
+                    let dockRect = this.dockEl.getBoundingClientRect();
+                    if (clientX >= dockRect.left && clientX <= dockRect.right &&
+                        clientY >= dockRect.top && clientY <= dockRect.bottom) {
+
+                        let slots = Array.from(this.dockEl.children);
+                        let targetIdx = slots.findIndex(el => {
+                            let r = el.getBoundingClientRect();
+                            return clientX >= r.left && clientX <= r.right && clientY >= r.top && clientY <= r.bottom;
+                        });
+
+                        if (ptr.source === 'grid') {
+                            let gridUnit = this.grid[ptr.r][ptr.c].unit;
+                            if (gridUnit) {
+                                let itemData = {
+                                    type: gridUnit.kind === 'base' ? 'base' : 'char',
+                                    val: gridUnit.name,
+                                    tier: gridUnit.tier || 1
+                                };
+
+                                if (targetIdx !== -1) {
+                                    let dst = this.dock[targetIdx];
+                                    if (dst && dst.type === 'base' && itemData.type === 'base' && dst.val === itemData.val && dst.tier === itemData.tier && dst.tier < 6) {
+                                        dst.tier += 1;
+                                        sound.playLevelUp();
+                                        this.grid[ptr.r][ptr.c].unit = null;
+                                    } else if (!dst) {
+                                        this.dock[targetIdx] = itemData;
+                                        sound.playPop();
+                                        this.grid[ptr.r][ptr.c].unit = null;
+                                    } else {
+                                        this.grid[ptr.r][ptr.c].unit = {
+                                            name: dst.val,
+                                            kind: dst.type,
+                                            tier: dst.tier || 1,
+                                            timer: 0,
+                                            disabledTimer: 0,
+                                            status: 'normal',
+                                            data: dst.type === 'base' ? BASE_UNITS[dst.val] : null,
+                                            offsetX: 0,
+                                            offsetY: 0
+                                        };
+                                        this.dock[targetIdx] = itemData;
+                                        sound.playPop();
+                                    }
+                                } else {
+                                    let emptyIdx = this.dock.findIndex(d => !d);
+                                    if (emptyIdx !== -1) {
+                                        this.dock[emptyIdx] = itemData;
+                                        sound.playPop();
+                                        this.grid[ptr.r][ptr.c].unit = null;
+                                    }
+                                }
+                            }
+                            this.inspectedCell = null;
+                            this.renderDock();
+                            this.detectFormations();
+                            return;
+                        }
+
+                        if (ptr.source === 'dock') {
+                            if (targetIdx !== -1 && targetIdx !== ptr.dockIdx) {
+                                let src = this.dock[ptr.dockIdx];
+                                let dst = this.dock[targetIdx];
+                                if (src && dst && src.type === 'base' && dst.type === 'base' && src.val === dst.val && src.tier === dst.tier && dst.tier < 6) {
+                                    dst.tier += 1;
+                                    sound.playLevelUp();
+                                    this.dock[ptr.dockIdx] = null;
+                                    this.selectedDockIdx = null;
+                                } else if (src && !dst) {
+                                    this.dock[targetIdx] = src;
+                                    this.dock[ptr.dockIdx] = null;
+                                    this.selectedDockIdx = null;
+                                    sound.playPop();
+                                } else if (src && dst) {
+                                    let tmp = this.dock[targetIdx];
+                                    this.dock[targetIdx] = this.dock[ptr.dockIdx];
+                                    this.dock[ptr.dockIdx] = tmp;
+                                    this.selectedDockIdx = null;
+                                    sound.playPop();
+                                }
+                            }
+                            this.renderDock();
+                            return;
+                        }
+                    }
+
+                    let rect = this.canvas.getBoundingClientRect();
+                    let targetC = Math.floor((clientX - rect.left) / this.cellW);
+                    let targetR = Math.floor((clientY - rect.top) / this.cellH);
+
+                    if (targetR >= 0 && targetR < ROWS && targetC >= 0 && targetC < COLS) {
+                        if (ptr.source === 'dock') {
+                            this.applyPlacement(targetR, targetC, ptr.item, ptr.dockIdx);
+                            this.selectedDockIdx = null;
+                        } else if (ptr.source === 'grid') {
+                            this.handleGridToGrid(ptr.r, ptr.c, targetR, targetC);
+                        }
+                    }
+
+                    this.renderDock();
+                    this.detectFormations();
+                };
+
+                window.addEventListener('pointerup', handlePointerUp);
+                window.addEventListener('pointercancel', handlePointerUp);
+            }
+
+            handleGridToGrid(srcR, srcC, dstR, dstC) {
+                if (srcR === dstR && srcC === dstC) return;
+                const srcCell = this.grid[srcR][srcC];
+                const dstCell = this.grid[dstR][dstC];
+
+                if (!dstCell.unlocked || dstCell.isPath) return;
+
+                if (!dstCell.unit) {
+                    dstCell.unit = srcCell.unit;
+                    srcCell.unit = null;
+                    sound.playPop();
+                    if (this.inspectedCell && this.inspectedCell.r === srcR && this.inspectedCell.c === srcC) {
+                        this.inspectedCell = { r: dstR, c: dstC };
+                    }
+                    return;
+                }
+
+                const u1 = srcCell.unit;
+                const u2 = dstCell.unit;
+
+                if (u1.kind === 'base' && u2.kind === 'base' && u1.name === u2.name && u1.tier === u2.tier && u2.tier < 6) {
+                    u2.tier += 1;
+                    u2.timer = 0;
+                    srcCell.unit = null;
+                    sound.playLevelUp();
+                    this.inspectedCell = { r: dstR, c: dstC };
+                    return;
+                }
+
+                const temp = dstCell.unit;
+                dstCell.unit = srcCell.unit;
+                srcCell.unit = temp;
+                sound.playPop();
+                this.inspectedCell = { r: dstR, c: dstC };
+            }
+
+            applyPlacement(r, c, item, dockIdx) {
+                const cell = this.grid[r][c];
+                if (cell.isPath) return;
+
+                if (item.type === 'tool' && !cell.unlocked) {
+                    cell.unlocked = true;
+                    sound.playShovel();
+                    this.clearDockItem(item);
+                    return;
+                }
+
+                if (cell.unlocked && !cell.unit && item.type !== 'tool') {
+                    if (item.type === 'base') {
+                        cell.unit = {
+                            name: item.val,
+                            kind: 'base',
+                            tier: item.tier || 1,
+                            timer: 0,
+                            disabledTimer: 0,
+                            status: 'normal',
+                            data: BASE_UNITS[item.val],
+                            offsetX: 0,
+                            offsetY: 0
+                        };
+                    } else if (item.type === 'char') {
+                        cell.unit = {
+                            name: item.val,
+                            kind: 'char',
+                            tier: 1,
+                            timer: 0,
+                            disabledTimer: 0,
+                            status: 'normal',
+                            data: null,
+                            offsetX: 0,
+                            offsetY: 0
+                        };
+                    }
+                    sound.playPop();
+                    this.clearDockItem(item);
+                    return;
+                }
+
+                if (cell.unlocked && cell.unit) {
+                    const u = cell.unit;
+                    if (item.type === 'base' && u.kind === 'base' && u.name === item.val && u.tier === item.tier && u.tier < 6) {
+                        u.tier += 1;
+                        u.timer = 0;
+                        sound.playLevelUp();
+                        this.clearDockItem(item);
+                    } else if (dockIdx !== undefined && dockIdx !== null) {
+                        let displacedItem = {
+                            type: u.kind === 'base' ? 'base' : 'char',
+                            val: u.name,
+                            tier: u.tier || 1
+                        };
+
+                        if (item.type === 'base') {
+                            cell.unit = {
+                                name: item.val,
+                                kind: 'base',
+                                tier: item.tier || 1,
+                                timer: 0,
+                                disabledTimer: 0,
+                                status: 'normal',
+                                data: BASE_UNITS[item.val],
+                                offsetX: 0,
+                                offsetY: 0
+                            };
+                        } else if (item.type === 'char') {
+                            cell.unit = {
+                                name: item.val,
+                                kind: 'char',
+                                tier: 1,
+                                timer: 0,
+                                disabledTimer: 0,
+                                status: 'normal',
+                                data: null,
+                                offsetX: 0,
+                                offsetY: 0
+                            };
+                        }
+                        this.dock[dockIdx] = displacedItem;
+                        sound.playPop();
+                    }
+                }
+            }
+
+            clearDockItem(item) {
+                const idx = this.dock.indexOf(item);
+                if (idx !== -1) {
+                    this.dock[idx] = null;
+                }
+            }
+
+            detectFormations() {
+                let prevCount = this.activeFormations.length;
+
+                for (let r = 0; r < ROWS; r++) {
+                    for (let c = 0; c < COLS; c++) {
+                        let u = this.grid[r][c].unit;
+                        if (u && u.kind === 'char') {
+                            u.data = null;
+                            u.speciesName = null;
+                            u.formation = null;
+                        }
+                    }
+                }
+
+                this.activeFormations = [];
+
+                for (let sp of SPECIES) {
+                    const len = sp.words.length;
+
+                    for (let r = 0; r < ROWS; r++) {
+                        for (let c = 0; c <= COLS - len; c++) {
+                            let match = true;
+                            let cells = [];
+                            for (let i = 0; i < len; i++) {
+                                let u = this.grid[r][c + i].unit;
+                                if (!u || u.kind !== 'char' || u.name !== sp.words[i]) {
+                                    match = false;
+                                    break;
+                                }
+                                cells.push({ r: r, c: c + i });
+                            }
+                            if (match) {
+                                this.registerFormation(sp, cells);
+                            }
+                        }
+                    }
+
+                    for (let r = 0; r <= ROWS - len; r++) {
+                        for (let c = 0; c < COLS; c++) {
+                            let match = true;
+                            let cells = [];
+                            for (let i = 0; i < len; i++) {
+                                let u = this.grid[r + i][c].unit;
+                                if (!u || u.kind !== 'char' || u.name !== sp.words[i]) {
+                                    match = false;
+                                    break;
+                                }
+                                cells.push({ r: r + i, c: c });
+                            }
+                            if (match) {
+                                this.registerFormation(sp, cells);
+                            }
+                        }
+                    }
+                }
+
+                if (this.activeFormations.length > prevCount) {
+                    sound.playCombine();
+                }
+            }
+
+            registerFormation(species, cells) {
+                if (!this.speciesExperience[species.name]) {
+                    this.speciesExperience[species.name] = { level: 1, kills: 0 };
+                }
+                let exp = this.speciesExperience[species.name];
+
+                let form = {
+                    species: species,
+                    cells: cells,
+                    timer: 0,
+                    skillCooldown: 210,
+                    disabledTimer: 0,
+                    status: 'normal',
+                    level: exp.level,
+                    kills: exp.kills
+                };
+                this.activeFormations.push(form);
+
+                for (let pos of cells) {
+                    let u = this.grid[pos.r][pos.c].unit;
+                    if (u) {
+                        u.data = species;
+                        u.speciesName = species.name;
+                        u.tier = exp.level;
+                        u.formation = form;
+                        u.disabledTimer = 0;
+                        u.status = 'normal';
+                    }
+                }
+            }
+
+            queueWave(waveNum, isRaid = false) {
+                this.waveKillCount = 0;
+                let isBossWave = (waveNum % 5 === 0) || (isRaid && waveNum > 15);
+                let enemyPool = selectedMap.enemies;
+
+                let totalCount = 4;
+                if (waveNum === 1) {
+                    totalCount = 4;
+                } else if (waveNum <= 20) {
+                    let baseCount = 3 + Math.floor(waveNum * 0.7);
+                    totalCount = isRaid ? (!isBossWave ? baseCount * 3 : baseCount) : baseCount;
+                } else {
+                    let baseCount = 3 + Math.floor(waveNum * 0.7);
+                    let mult = Math.pow(2, waveNum - 20);
+                    baseCount = Math.min(baseCount * mult, 64);
+                    totalCount = isRaid ? (!isBossWave ? baseCount * 3 : baseCount) : baseCount;
+                }
+
+                let exponentialMult = (waveNum > 20) ? Math.pow(1.1, waveNum - 20) : 1.0;
+                let baseHp = Math.floor((35 + waveNum * 20) * exponentialMult);
+                let speedScale = Math.min(1.75, 0.85 + waveNum * 0.035);
+                const poisonActiveThisWave = (gameMode === 'tower' && levelItems.poisonWavesRemaining > 0);
+                const poisonHpScale = poisonActiveThisWave ? 0.5 : 1.0;
+                const poisonSpeedScale = poisonActiveThisWave ? 1.35 : 1.0;
+
+                this.waveTargetKill = totalCount + (isBossWave ? 1 : 0);
+
+                if (isBossWave) {
+                    let b = selectedMap.boss;
+                    let cycleCount = Math.floor(waveNum / 5);
+                    let bossBaseHp = b.hp * Math.pow(2, Math.max(0, cycleCount - 1)) + (waveNum * 60);
+                    let bossHpCalc = Math.floor(bossBaseHp * (isRaid ? 3.0 : 1.0));
+
+                    this.spawnQueue.push({
+                        delay: 15,
+                        isBoss: true,
+                        name: b.name,
+                        title: isRaid ? `狂暴泰坦・${b.title}` : b.title,
+                        skill: b.skill,
+                        effect: b.effect,
+                        hp: Math.max(1, Math.floor(bossHpCalc * poisonHpScale)),
+                        maxHp: Math.max(1, Math.floor(bossHpCalc * poisonHpScale)),
+                        speed: b.baseSpd * (isRaid ? 1.15 : 1.0) * poisonSpeedScale,
+                        radius: 22, poisonWeakened: poisonActiveThisWave
+                    });
+
+                    for (let i = 0; i < totalCount; i++) {
+                        let proto = enemyPool[i % enemyPool.length];
+                        let hpVal = Math.floor(baseHp * proto.hpScale);
+                        let finalSpd = Math.min(0.048, proto.baseSpd * speedScale * (isRaid ? 1.08 : 1.0));
+                        this.spawnQueue.push({
+                            delay: 45 + i * (isRaid ? 22 : 36),
+                            isBoss: false,
+                            name: proto.name,
+                            hp: Math.max(1, Math.floor(hpVal * poisonHpScale)),
+                            maxHp: Math.max(1, Math.floor(hpVal * poisonHpScale)),
+                            speed: finalSpd * poisonSpeedScale,
+                            radius: 13, poisonWeakened: poisonActiveThisWave
+                        });
+                    }
+                } else {
+                    for (let i = 0; i < totalCount; i++) {
+                        let proto = enemyPool[i % enemyPool.length];
+                        let waveScale = (i === 0 && waveNum > 2) ? 1.4 : 1.0;
+                        let hpVal = Math.floor(baseHp * proto.hpScale * waveScale);
+                        let finalSpd = Math.min(0.052, proto.baseSpd * speedScale);
+                        this.spawnQueue.push({
+                            delay: 20 + i * (isRaid ? 18 : 36),
+                            isBoss: false,
+                            name: proto.name,
+                            hp: Math.max(1, Math.floor(hpVal * poisonHpScale)),
+                            maxHp: Math.max(1, Math.floor(hpVal * poisonHpScale)),
+                            speed: finalSpd * poisonSpeedScale,
+                            radius: waveScale > 1.0 ? 15 : 13, poisonWeakened: poisonActiveThisWave
+                        });
+                    }
+                }
+            }
+
+            spawnEnemyFromData(data) {
+                this.enemies.push({
+                    step: 0, progress: 0, isBoss: data.isBoss,
+                    name: data.name, title: data.title || "",
+                    skill: data.skill || "", effect: data.effect || "",
+                    hp: data.hp, maxHp: data.maxHp, speed: data.speed, radius: data.radius,
+                    skillTimer: 0, frozen: false, poisonWeakened: !!data.poisonWeakened
+                });
+            }
+
+            update() {
+                this.statsEl.innerText = `❤️ ${this.hp} | 擊殺: ${this.kills}`;
+
+                if (this.availableDraws > 0) {
+                    this.summonBtn.innerText = `重抽補滿 (可抽:${this.availableDraws})`;
+                    this.summonBtn.disabled = isGameOver;
+                } else {
+                    this.summonBtn.innerText = `擊殺進度 (${this.kills}/${this.currentKillTarget})`;
+                    this.summonBtn.disabled = true;
+                }
+
+                if (!gameStarted || isGameOver) return;
+
+                for (let i = this.spawnQueue.length - 1; i >= 0; i--) {
+                    let item = this.spawnQueue[i];
+                    item.delay--;
+                    if (item.delay <= 0) {
+                        this.spawnEnemyFromData(item);
+                        this.spawnQueue.splice(i, 1);
+                    }
+                }
+
+                if (gameMode === 'tower' && levelItems.volcano && levelItems.volcanoFrames > 0) {
+                    levelItems.volcanoFrames--;
+                    levelItems.volcanoTick++;
+                    if (levelItems.volcanoTick >= 60) {
+                        levelItems.volcanoTick = 0;
+                        for (let i = this.enemies.length - 1; i >= 0; i--) {
+                            const en = this.enemies[i];
+                            const lavaDamage = Math.max(120, Math.floor(en.maxHp * 0.20));
+                            en.hp -= lavaDamage;
+                            if (en.hp <= 0) { this.enemies.splice(i, 1); this.addKill(); }
+                        }
+                    }
+                    if (levelItems.volcanoFrames <= 0) levelItems.volcanoTick = 0;
+                }
+
+                if (gameMode === 'tower' && levelItems.bulldozer && !levelItems.bulldozerUsed &&
+                    this.enemies.some(en => en.step >= Math.max(0, selectedMap.path.length - 2))) {
+                    levelItems.bulldozerUsed = true;
+                    levelItems.bulldozerAnimFrames = 42;
+                    const cleared = this.enemies.length;
+                    this.enemies = [];
+                    this.spawnQueue = [];
+                    for (let n = 0; n < cleared; n++) this.addKill();
+                    sound.playBurst();
+                }
+
+                for (let i = this.enemies.length - 1; i >= 0; i--) {
+                    let en = this.enemies[i];
+                    if (!en.frozen) {
+                        en.progress += en.speed;
+                        if (en.progress >= 1) { en.step += Math.floor(en.progress); en.progress %= 1; }
+                    }
+                    if (en.step >= selectedMap.path.length - 1) {
+                        const damage = (en.isBoss ? 2 : 1) * (en.poisonWeakened ? 0.5 : 1);
+                        this.hp = Math.max(0, this.hp - damage);
+                        this.enemies.splice(i, 1);
+                        continue;
+                    }
+
+                    if (en.isBoss) {
+                        en.skillTimer++;
+                        if (en.skillTimer >= 140) {
+                            en.skillTimer = 0;
+                            this.castBossSkill(en);
+                        }
+                    }
+                }
+
+                for (let r = 0; r < ROWS; r++) {
+                    for (let c = 0; c < COLS; c++) {
+                        let u = this.grid[r][c].unit;
+                        if (!u || u.kind !== 'base') continue;
+
+                        if (u.disabledTimer > 0) {
+                            u.disabledTimer--;
+                            if (u.disabledTimer <= 0) u.status = 'normal';
+                            continue;
+                        }
+
+                        u.timer++;
+                        let interval = Math.max(16, u.data.baseSpd - (u.tier - 1) * 4);
+                        if (u.timer >= interval) {
+                            u.timer = 0;
+                            let ux = c * this.cellW + this.cellW / 2;
+                            let uy = r * this.cellH + this.cellH / 2;
+                            let currentRange = u.data.r + (u.tier === 6 ? 1.0 : 0);
+                            this.triggerAttack(ux, uy, currentRange, u.tier, [{ r, c }], null, false);
+                        }
+                    }
+                }
+
+                for (let form of this.activeFormations) {
+                    if (form.disabledTimer > 0) {
+                        form.disabledTimer--;
+                        if (form.disabledTimer <= 0) form.status = 'normal';
+                        for (let pos of form.cells) {
+                            let u = this.grid[pos.r][pos.c].unit;
+                            if (u) {
+                                u.disabledTimer = form.disabledTimer;
+                                u.status = form.status;
+                            }
+                        }
+                        continue;
+                    } else {
+                        for (let pos of form.cells) {
+                            let u = this.grid[pos.r][pos.c].unit;
+                            if (u && u.disabledTimer > 0) {
+                                u.disabledTimer = 0;
+                                u.status = 'normal';
+                            }
+                        }
+                    }
+
+                    let avgX = 0, avgY = 0;
+                    for (let pos of form.cells) {
+                        avgX += pos.c * this.cellW + this.cellW / 2;
+                        avgY += pos.r * this.cellH + this.cellH / 2;
+                    }
+                    avgX /= form.cells.length;
+                    avgY /= form.cells.length;
+
+                    form.skillCooldown--;
+                    if (form.skillCooldown <= 0) {
+                        form.skillCooldown = 210;
+                        this.castSpecialSkill(avgX, avgY, form);
+                    }
+
+                    form.timer++;
+                    let interval = Math.max(14, form.species.baseSpd - (form.level - 1) * 6);
+                    if (form.timer >= interval) {
+                        form.timer = 0;
+                        let currentRange = form.species.r + (form.level === 6 ? 1.0 : 0);
+                        this.triggerAttack(avgX, avgY, currentRange, form.level, form.cells, form, false);
+                    }
+                }
+
+                for (let r = 0; r < ROWS; r++) {
+                    for (let c = 0; c < COLS; c++) {
+                        let u = this.grid[r][c].unit;
+                        if (u && u.kind === 'char' && !u.formation && u.disabledTimer > 0) {
+                            u.disabledTimer--;
+                            if (u.disabledTimer <= 0) u.status = 'normal';
+                        }
+                    }
+                }
+
+                for (let i = this.bodyLungeAnimations.length - 1; i >= 0; i--) {
+                    let anim = this.bodyLungeAnimations[i];
+                    anim.frame++;
+                    let t = anim.frame / anim.maxFrames;
+                    let dispFactor = Math.sin(t * Math.PI);
+
+                    for (let pos of anim.cells) {
+                        let u = this.grid[pos.r][pos.c].unit;
+                        if (u) {
+                            u.offsetX = anim.dx * dispFactor;
+                            u.offsetY = anim.dy * dispFactor;
+                        }
+                    }
+
+                    if (anim.frame >= anim.maxFrames) {
+                        for (let pos of anim.cells) {
+                            let u = this.grid[pos.r][pos.c].unit;
+                            if (u) {
+                                u.offsetX = 0;
+                                u.offsetY = 0;
+                            }
+                        }
+                        this.bodyLungeAnimations.splice(i, 1);
+                    }
+                }
+
+                for (let i = this.projectiles.length - 1; i >= 0; i--) {
+                    let p = this.projectiles[i];
+
+                    if (p.attackType === 'melee_slash' || p.attackType === 'skill_burst' || p.attackType === 'skill_aoe_expand' || p.attackType === 'boss_aura') {
+                        p.life--;
+                        if (p.attackType === 'skill_aoe_expand' || p.attackType === 'boss_aura') {
+                            p.curRadius += p.growSpd || 3;
+                        }
+                        if (p.life <= 0) {
+                            this.projectiles.splice(i, 1);
+                        }
+                    } else if (p.attackType === 'spit') {
+                        let dx = p.tx - p.x;
+                        let dy = p.ty - p.y;
+                        let dist = Math.hypot(dx, dy);
+                        if (dist < 8) {
+                            this.hitTarget(p);
+                            this.projectiles.splice(i, 1);
+                        } else {
+                            p.x += (dx / dist) * 8.5;
+                            p.y += (dy / dist) * 8.5;
+                        }
+                    } else if (p.attackType === 'rock') {
+                        p.progress += p.speed;
+                        let curX = p.startX + (p.tx - p.startX) * p.progress;
+                        let curY = p.startY + (p.ty - p.startY) * p.progress;
+                        let arcHeight = Math.sin(p.progress * Math.PI) * 45;
+                        p.x = curX;
+                        p.y = curY - arcHeight;
+
+                        if (p.progress >= 1) {
+                            this.hitTarget(p);
+                            this.projectiles.splice(i, 1);
+                        }
+                    }
+                }
+            }
+
+            castSpecialSkill(ux, uy, form) {
+                let sp = form.species;
+                let tier = form.level;
+                let maxDist = (sp.r + (tier === 6 ? 1.0 : 0) + 0.5) * this.cellW;
+
+                let primaryTarget = null;
+                let minDist = Infinity;
+                for (let en of this.enemies) {
+                    let pPos = this.getEnemyPos(en);
+                    let dist = Math.hypot(pPos.x - ux, pPos.y - uy);
+                    if (dist <= maxDist && en.hp > 0 && dist < minDist) {
+                        minDist = dist;
+                        primaryTarget = en;
+                    }
+                }
+
+                if (!primaryTarget) return;
+
+                let tPos = this.getEnemyPos(primaryTarget);
+
+                if (sp.skillType === "single_burst") {
+                    sound.playBurst();
+                    let baseDmg = (16 + tier * 6) * tier;
+                    let burstDmg = Math.floor(baseDmg * sp.dmgMult);
+                    this.projectiles.push({
+                        attackType: 'skill_burst',
+                        x: tPos.x,
+                        y: tPos.y,
+                        target: primaryTarget,
+                        sourceFormation: form,
+                        life: 16
+                    });
+                    this.hitTarget({ target: primaryTarget, dmg: burstDmg, sourceFormation: form });
+
+                } else {
+                    sound.playAoE();
+                    let aoePixelRadius = sp.aoeRadius * this.cellW;
+                    let baseDmg = (16 + tier * 6) * tier;
+                    let aoeDmg = Math.floor(baseDmg * sp.dmgMult);
+
+                    this.projectiles.push({
+                        attackType: 'skill_aoe_expand',
+                        x: tPos.x,
+                        y: tPos.y,
+                        curRadius: 10,
+                        maxRadius: aoePixelRadius,
+                        growSpd: (aoePixelRadius - 10) / 18,
+                        color: sp.r >= 4 ? "#d500f9" : "#00e676",
+                        life: 20
+                    });
+
+                    for (let en of this.enemies) {
+                        let ePos = this.getEnemyPos(en);
+                        if (Math.hypot(ePos.x - tPos.x, ePos.y - tPos.y) <= aoePixelRadius && en.hp > 0) {
+                            this.hitTarget({ target: en, dmg: aoeDmg, sourceFormation: form });
+                        }
+                    }
+                }
+            }
+
+            castBossSkill(boss) {
+                let bPos = this.getEnemyPos(boss);
+                let auraColor = "#00e5ff";
+                if (boss.effect === "stun") auraColor = "#ff9100";
+                else if (boss.effect === "paralyze") auraColor = "#ffd600";
+                else if (boss.effect === "freeze") auraColor = "#00e5ff";
+                else if (boss.effect === "poison") auraColor = "#76ff03";
+
+                sound.playAoE();
+
+                this.projectiles.push({
+                    attackType: 'boss_aura',
+                    effectType: boss.effect,
+                    x: bPos.x,
+                    y: bPos.y,
+                    curRadius: 10,
+                    growSpd: 4.5,
+                    color: auraColor,
+                    life: 22
+                });
+
+                for (let r = 0; r < ROWS; r++) {
+                    for (let c = 0; c < COLS; c++) {
+                        let u = this.grid[r][c].unit;
+                        if (!u) continue;
+                        let ux = c * this.cellW + this.cellW / 2;
+                        let uy = r * this.cellH + this.cellH / 2;
+                        if (Math.hypot(ux - bPos.x, uy - bPos.y) <= this.cellW * 2.6) {
+                            if (Math.random() < 0.8) {
+                                u.disabledTimer = 80;
+                                u.status = boss.effect;
+                                if (u.formation) {
+                                    u.formation.disabledTimer = 80;
+                                    u.formation.status = boss.effect;
+                                    for (let pos of u.formation.cells) {
+                                        let fu = this.grid[pos.r][pos.c].unit;
+                                        if (fu) {
+                                            fu.disabledTimer = 80;
+                                            fu.status = boss.effect;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            hitTarget(p) {
+                if (p.target && p.target.hp > 0) {
+                    p.target.hp -= p.dmg;
+                    if (p.target.hp <= 0) {
+                        let idx = this.enemies.indexOf(p.target);
+                        if (idx !== -1) {
+                            this.enemies.splice(idx, 1);
+                            this.addKill();
+
+                            for (let form of this.activeFormations) {
+                                let spName = form.species.name;
+                                form.kills++;
+
+                                if (!this.speciesExperience[spName]) {
+                                    this.speciesExperience[spName] = { level: 1, kills: 0 };
+                                }
+                                this.speciesExperience[spName].kills++;
+
+                                if (form.kills >= form.level * 2 && form.level < 6) {
+                                    form.level++;
+                                    this.speciesExperience[spName].level = form.level;
+                                    sound.playLevelUp();
+                                    for (let pos of form.cells) {
+                                        let u = this.grid[pos.r][pos.c].unit;
+                                        if (u) u.tier = form.level;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            triggerAttack(ux, uy, range, tier, originCells, sourceFormation, isSpecial) {
+                let maxDist = (range + 0.3) * this.cellW;
+
+                for (let en of this.enemies) {
+                    let pPos = this.getEnemyPos(en);
+                    let dist = Math.hypot(pPos.x - ux, pPos.y - uy);
+                    if (dist <= maxDist && en.hp > 0) {
+                        let calcDmg = (14 + tier * 6) * tier;
+
+                        if (range <= 1.5) {
+                            let dx = (pPos.x - ux);
+                            let dy = (pPos.y - uy);
+                            let dLen = Math.hypot(dx, dy) || 1;
+                            let pushDist = Math.min(dLen * 0.45, 18);
+
+                            this.bodyLungeAnimations.push({
+                                frame: 0,
+                                maxFrames: 12,
+                                dx: (dx / dLen) * pushDist,
+                                dy: (dy / dLen) * pushDist,
+                                cells: originCells
+                            });
+
+                            sound.playAttack('slash');
+
+                            this.projectiles.push({
+                                attackType: 'melee_slash',
+                                x: pPos.x,
+                                y: pPos.y,
+                                sourceFormation: sourceFormation,
+                                target: en,
+                                dmg: calcDmg,
+                                life: 8
+                            });
+                            this.hitTarget({ target: en, dmg: calcDmg, sourceFormation: sourceFormation });
+
+                        } else if (range === 2) {
+                            let isSpecialWater = sourceFormation && (sourceFormation.species.name === "水蛇" || sourceFormation.species.name === "水蛙");
+                            sound.playAttack('spit');
+
+                            this.projectiles.push({
+                                attackType: 'spit',
+                                x: ux,
+                                y: uy,
+                                tx: pPos.x,
+                                ty: pPos.y,
+                                isWater: isSpecialWater,
+                                sourceFormation: sourceFormation,
+                                target: en,
+                                dmg: calcDmg
+                            });
+                        } else {
+                            sound.playAttack('rock');
+
+                            this.projectiles.push({
+                                attackType: 'rock',
+                                startX: ux,
+                                startY: uy,
+                                x: ux,
+                                y: uy,
+                                tx: pPos.x,
+                                ty: pPos.y,
+                                progress: 0,
+                                speed: range >= 4 ? 0.06 : 0.05,
+                                sourceFormation: sourceFormation,
+                                target: en,
+                                dmg: calcDmg
+                            });
+                        }
+                        break;
+                    }
+                }
+            }
+
+            getEnemyPos(en) {
+                let mapData = selectedMap || MAP_PRESETS[0];
+                let pathArr = mapData.path;
+                let maxIdx = Math.max(0, pathArr.length - 1);
+                let idx = Math.min(Math.max(0, en.step || 0), maxIdx);
+                let cur = pathArr[idx] || { r: 0, c: 0 };
+                let next = pathArr[Math.min(idx + 1, maxIdx)] || cur;
+                let prog = Math.min(Math.max(0, en.progress || 0), 1);
+                let x = (cur.c + (next.c - cur.c) * prog) * this.cellW + this.cellW / 2;
+                let y = (cur.r + (next.r - cur.r) * prog) * this.cellH + this.cellH / 2;
+                return { x, y };
+            }
+
+            drawRangeCircle(centerX, centerY, radiusCells) {
+                const ctx = this.ctx;
+                const rPx = radiusCells * this.cellW;
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, rPx, 0, Math.PI * 2);
+                ctx.fillStyle = "rgba(46, 125, 50, 0.22)";
+                ctx.fill();
+                ctx.strokeStyle = "#2e7d32";
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 4]);
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            draw() {
+                const ctx = this.ctx;
+                const cellW = this.cellW;
+                const cellH = this.cellH;
+                const isSingle = this.sideEl.classList.contains('single-mode');
+
+                ctx.fillStyle = "#fdf7ea";
+                ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                for (let r = 0; r < ROWS; r++) {
+                    for (let c = 0; c < COLS; c++) {
+                        let cell = this.grid[r][c];
+                        if (!cell) continue;
+                        let x = c * cellW;
+                        let y = r * cellH;
+
+                        if (cell.isPath) {
+                            if (gameMode === 'tower' && levelItems.volcano && levelItems.volcanoFrames > 0) {
+                                ctx.fillStyle = "#b71c1c";
+                                ctx.fillRect(x, y, cellW, cellH);
+                                ctx.strokeStyle = "#ff6f00";
+                                ctx.lineWidth = 2;
+                                ctx.strokeRect(x, y, cellW, cellH);
+                                ctx.fillStyle = "rgba(255,193,7,0.42)";
+                                ctx.beginPath(); ctx.arc(x + cellW * 0.28, y + cellH * 0.38, Math.max(3, cellW * 0.07), 0, Math.PI * 2); ctx.fill();
+                                ctx.beginPath(); ctx.arc(x + cellW * 0.72, y + cellH * 0.68, Math.max(2, cellW * 0.05), 0, Math.PI * 2); ctx.fill();
+                            } else {
+                                ctx.fillStyle = selectedMap.pathBg || "#e2d5c5";
+                                ctx.fillRect(x, y, cellW, cellH);
+                                ctx.strokeStyle = selectedMap.pathBorder || "#8d7b6f";
+                                ctx.lineWidth = 1.5;
+                                ctx.strokeRect(x, y, cellW, cellH);
+                            }
+                        } else if (!cell.unlocked) {
+                            ctx.fillStyle = selectedMap.lockedBg || "#788770";
+                            ctx.fillRect(x, y, cellW, cellH);
+                            ctx.strokeStyle = selectedMap.lockedBorder || "#4a5544";
+                            ctx.lineWidth = 1;
+                            ctx.strokeRect(x, y, cellW, cellH);
+                            ctx.fillStyle = selectedMap.lockedBorder || "#4a5544";
+                            ctx.beginPath();
+                            ctx.arc(x + cellW/2, y + cellH/2, 3, 0, Math.PI * 2);
+                            ctx.fill();
+                        } else {
+                            ctx.fillStyle = "#fdf7ea";
+                            ctx.fillRect(x, y, cellW, cellH);
+                            ctx.strokeStyle = "#94a3b8";
+                            ctx.lineWidth = 1.5;
+                            ctx.strokeRect(x, y, cellW, cellH);
+                        }
+
+                        if (cell.unit) {
+                            let u = cell.unit;
+                            let offX = u.offsetX || 0;
+                            let offY = u.offsetY || 0;
+
+                            if (u.disabledTimer > 0) {
+                                if (u.status === 'freeze') ctx.fillStyle = "#0288d1";
+                                else if (u.status === 'paralyze') ctx.fillStyle = "#fbc02d";
+                                else if (u.status === 'poison') ctx.fillStyle = "#388e3c";
+                                else ctx.fillStyle = "#ef6c00";
+                            } else if (u.kind === 'char') {
+                                ctx.fillStyle = "#2e7d32";
+                            } else if (u.tier === 6) {
+                                ctx.fillStyle = "#d50000";
+                            } else {
+                                ctx.fillStyle = "#111111";
+                            }
+
+                            ctx.font = isSingle ? "bold 26px 'Comic Sans MS', sans-serif" : "bold 20px 'Comic Sans MS', sans-serif";
+                            ctx.textAlign = "center";
+                            ctx.textBaseline = "middle";
+                            ctx.fillText(u.name, x + cellW/2 - 4 + offX, y + cellH/2 + 2 + offY);
+
+                            if (u.disabledTimer > 0) {
+                                ctx.font = "bold 11px sans-serif";
+                                let sIcon = "💫";
+                                if (u.status === 'freeze') sIcon = "❄️";
+                                else if (u.status === 'paralyze') sIcon = "⚡";
+                                else if (u.status === 'poison') sIcon = "🧪";
+                                ctx.fillText(sIcon, x + 10 + offX, y + cellH - 8 + offY);
+                            }
+
+                            if (u.kind === 'base' || u.data) {
+                                ctx.save();
+                                ctx.fillStyle = (u.tier === 6) ? "#d50000" : "#e65100";
+                                ctx.font = isSingle ? "900 13px sans-serif" : "900 10px sans-serif";
+                                ctx.textAlign = "right";
+                                ctx.textBaseline = "top";
+                                ctx.fillText(`Lv.${u.tier}`, x + cellW - 3 + offX, y + 3 + offY);
+                                ctx.restore();
+                            }
+                        }
+                    }
+                }
+
+                for (let form of this.activeFormations) {
+                    ctx.save();
+                    let wordCount = form.species.words.length;
+                    let glowColor = (wordCount === 3) ? "#ffd700" : "#d500f9";
+                    let fillAura = (wordCount === 3) ? "rgba(255, 215, 0, 0.18)" : "rgba(213, 0, 249, 0.18)";
+
+                    ctx.strokeStyle = glowColor;
+                    ctx.fillStyle = fillAura;
+                    ctx.lineWidth = 3;
+                    ctx.shadowColor = glowColor;
+                    ctx.shadowBlur = (wordCount === 3) ? 15 : 11;
+                    ctx.setLineDash([]);
+
+                    for (let pos of form.cells) {
+                        ctx.fillRect(pos.c * cellW + 2, pos.r * cellH + 2, cellW - 4, cellH - 4);
+                        ctx.strokeRect(pos.c * cellW + 2, pos.r * cellH + 2, cellW - 4, cellH - 4);
+                    }
+                    ctx.restore();
+                }
+
+                if (this.inspectedCell) {
+                    let cell = this.grid[this.inspectedCell.r][this.inspectedCell.c];
+                    if (cell && cell.unit && cell.unit.data) {
+                        let range = cell.unit.data.r + (cell.unit.tier === 6 ? 1.0 : 0);
+                        let cx = this.inspectedCell.c * cellW + cellW / 2;
+                        let cy = this.inspectedCell.r * cellH + cellH / 2;
+                        this.drawRangeCircle(cx, cy, range);
+                    }
+                }
+
+                for (let pid in this.activePointers) {
+                    let ptr = this.activePointers[pid];
+                    let hoverC = Math.floor(ptr.canvasX / cellW);
+                    let hoverR = Math.floor(ptr.canvasY / cellH);
+                    let range = 0;
+
+                    if (ptr.source === 'dock') {
+                        let item = ptr.item;
+                        if (item.type === 'base' && BASE_UNITS[item.val]) {
+                            range = BASE_UNITS[item.val].r + (item.tier === 6 ? 1.0 : 0);
+                        }
+                    } else if (ptr.source === 'grid') {
+                        let u = ptr.unit;
+                        if (u.kind === 'base' && u.data) {
+                            range = u.data.r + (u.tier === 6 ? 1.0 : 0);
+                        }
+                    }
+
+                    if (range > 0) {
+                        if (hoverR >= 0 && hoverR < ROWS && hoverC >= 0 && hoverC < COLS) {
+                            this.drawRangeCircle(hoverC * cellW + cellW / 2, hoverR * cellH + cellH / 2, range);
+                        } else {
+                            this.drawRangeCircle(ptr.canvasX, ptr.canvasY, range);
+                        }
+                    }
+
+                    ctx.save();
+                    let boxSize = isSingle ? 44 : 32;
+                    ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+                    ctx.fillRect(ptr.canvasX - boxSize/2, ptr.canvasY - boxSize/2, boxSize, boxSize);
+                    ctx.strokeStyle = "#ff5722";
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(ptr.canvasX - boxSize/2, ptr.canvasY - boxSize/2, boxSize, boxSize);
+
+                    ctx.fillStyle = "#111111";
+                    ctx.font = isSingle ? "bold 22px sans-serif" : "bold 16px sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    let label = ptr.source === 'dock' ? ptr.item.val : ptr.unit.name;
+                    ctx.fillText(label, ptr.canvasX, ptr.canvasY);
+                    ctx.restore();
+                }
+
+                let endPoint = selectedMap.path[selectedMap.path.length - 1];
+                if (gameMode === 'tower' && levelItems.bulldozer) {
+                    const bx = endPoint.c * cellW + cellW / 2;
+                    const by = endPoint.r * cellH + cellH / 2 - Math.min(18, cellH * 0.18);
+                    ctx.save();
+                    const offset = levelItems.bulldozerAnimFrames > 0 ? (42 - levelItems.bulldozerAnimFrames) * 2.8 : 0;
+                    ctx.font = isSingle ? "bold 30px sans-serif" : "bold 23px sans-serif";
+                    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+                    ctx.fillText("🚜", bx - offset, by);
+                    if (levelItems.bulldozerAnimFrames > 0) { ctx.fillStyle = "rgba(255,255,255,0.9)"; ctx.font = "bold 12px sans-serif"; ctx.fillText("推土機啟動！", bx, by - 24); }
+                    ctx.restore();
+                }
+                if (levelItems.bulldozerAnimFrames > 0) levelItems.bulldozerAnimFrames--;
+                ctx.fillStyle = "#d32f2f";
+                ctx.font = isSingle ? "bold 24px sans-serif" : "bold 18px sans-serif";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText("🏕️", endPoint.c * cellW + cellW/2, endPoint.r * cellH + cellH/2);
+
+                this.enemies.forEach(en => {
+                    let pos = this.getEnemyPos(en);
+                    ctx.save();
+                    let enRadius = isSingle ? en.radius * 1.3 : en.radius;
+
+                    if (en.isBoss) {
+                        ctx.fillStyle = "rgba(255, 215, 0, 0.35)";
+                        ctx.beginPath();
+                        ctx.arc(pos.x, pos.y, enRadius + 6, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        ctx.fillStyle = "#d50000";
+                        ctx.beginPath();
+                        ctx.arc(pos.x, pos.y, enRadius, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.strokeStyle = "#ffd700";
+                        ctx.lineWidth = 3;
+                        ctx.stroke();
+
+                        ctx.fillStyle = "#fff";
+                        ctx.font = isSingle ? "900 22px 'Comic Sans MS', sans-serif" : "900 17px 'Comic Sans MS', sans-serif";
+                        ctx.textAlign = "center";
+                        ctx.textBaseline = "middle";
+                        ctx.fillText(en.name, pos.x, pos.y);
+
+                        let hpText = `${Math.max(0, Math.ceil(en.hp))} / ${en.maxHp}`;
+                        let badgeW = Math.max(50, ctx.measureText(hpText).width + 16);
+                        ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
+                        ctx.beginPath();
+                        ctx.roundRect(pos.x - badgeW/2, pos.y - (enRadius + 22), badgeW, 16, 4);
+                        ctx.fill();
+                        ctx.strokeStyle = "#ffd700";
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+
+                        ctx.fillStyle = "#ffeb3b";
+                        ctx.font = "bold 11px sans-serif";
+                        ctx.fillText(hpText, pos.x, pos.y - (enRadius + 14));
+
+                        ctx.fillStyle = "#ff1744";
+                        ctx.font = "bold 10px sans-serif";
+                        ctx.fillText(`👑 ${en.title}`, pos.x, pos.y - (enRadius + 26));
+
+                    } else {
+                        ctx.fillStyle = "#4e342e";
+                        ctx.beginPath();
+                        ctx.arc(pos.x, pos.y, enRadius, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.strokeStyle = "#271d19";
+                        ctx.lineWidth = 1.5;
+                        ctx.stroke();
+
+                        ctx.fillStyle = "#ffe0b2";
+                        ctx.font = isSingle ? "bold 15px 'Comic Sans MS', sans-serif" : "bold 12px 'Comic Sans MS', sans-serif";
+                        ctx.textAlign = "center";
+                        ctx.textBaseline = "middle";
+                        ctx.fillText(en.name, pos.x, pos.y);
+
+                        ctx.fillStyle = "#757575";
+                        ctx.fillRect(pos.x - 14, pos.y - (enRadius + 6), 28, 3);
+                        ctx.fillStyle = "#4caf50";
+                        ctx.fillRect(pos.x - 14, pos.y - (enRadius + 6), (en.hp / en.maxHp) * 28, 3);
+                    }
+                    ctx.restore();
+                });
+
+                this.projectiles.forEach(p => {
+                    if (p.attackType === 'melee_slash') {
+                        ctx.save();
+                        ctx.strokeStyle = "#ff3d00";
+                        ctx.lineWidth = 2.5;
+                        ctx.beginPath();
+                        ctx.moveTo(p.x - 10, p.y - 10); ctx.lineTo(p.x + 10, p.y + 10);
+                        ctx.moveTo(p.x - 6, p.y - 12); ctx.lineTo(p.x + 12, p.y + 6);
+                        ctx.stroke();
+                        ctx.restore();
+
+                    } else if (p.attackType === 'skill_burst') {
+                        ctx.save();
+                        ctx.strokeStyle = "#ff1744";
+                        ctx.lineWidth = 3.5;
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, 16, 0, Math.PI * 2);
+                        ctx.stroke();
+                        ctx.strokeStyle = "#ffd700";
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.moveTo(p.x - 16, p.y); ctx.lineTo(p.x + 16, p.y);
+                        ctx.moveTo(p.x, p.y - 16); ctx.lineTo(p.x + 16, p.y);
+                        ctx.stroke();
+                        ctx.restore();
+
+                    } else if (p.attackType === 'skill_aoe_expand' || p.attackType === 'boss_aura') {
+                        ctx.save();
+                        if (p.attackType === 'boss_aura') {
+                            if (p.effectType === 'stun') {
+                                ctx.strokeStyle = "#ff9100";
+                                ctx.lineWidth = 4;
+                                ctx.setLineDash([8, 4]);
+                                ctx.beginPath();
+                                ctx.arc(p.x, p.y, p.curRadius, 0, Math.PI * 2);
+                                ctx.stroke();
+                                ctx.fillStyle = "rgba(255, 145, 0, 0.15)";
+                                ctx.fill();
+                            } else if (p.effectType === 'paralyze') {
+                                ctx.strokeStyle = "#ffd600";
+                                ctx.lineWidth = 3;
+                                ctx.beginPath();
+                                for (let a = 0; a < Math.PI * 2; a += 0.35) {
+                                    let rVar = p.curRadius + ((Math.sin(a * 8 + p.life) * 6));
+                                    let px = p.x + Math.cos(a) * rVar;
+                                    let py = p.y + Math.sin(a) * rVar;
+                                    if (a === 0) ctx.moveTo(px, py);
+                                    else ctx.lineTo(px, py);
+                                }
+                                ctx.closePath();
+                                ctx.stroke();
+                                ctx.fillStyle = "rgba(255, 214, 0, 0.2)";
+                                ctx.fill();
+                            } else if (p.effectType === 'freeze') {
+                                ctx.strokeStyle = "#00e5ff";
+                                ctx.lineWidth = 3;
+                                ctx.beginPath();
+                                ctx.arc(p.x, p.y, p.curRadius, 0, Math.PI * 2);
+                                ctx.stroke();
+                                ctx.fillStyle = "rgba(0, 229, 255, 0.22)";
+                                ctx.fill();
+                                ctx.fillStyle = "#fff";
+                                for (let i = 0; i < 6; i++) {
+                                    let fa = (i * Math.PI / 3);
+                                    ctx.fillRect(p.x + Math.cos(fa) * p.curRadius * 0.7 - 2, p.y + Math.sin(fa) * p.curRadius * 0.7 - 2, 4, 4);
+                                }
+                            } else if (p.effectType === 'poison') {
+                                ctx.strokeStyle = "#76ff03";
+                                ctx.lineWidth = 3;
+                                ctx.beginPath();
+                                ctx.arc(p.x, p.y, p.curRadius, 0, Math.PI * 2);
+                                ctx.stroke();
+                                ctx.fillStyle = "rgba(118, 255, 3, 0.18)";
+                                ctx.fill();
+                                ctx.fillStyle = "#64dd17";
+                                ctx.beginPath();
+                                ctx.arc(p.x + Math.sin(p.life) * 15, p.y + Math.cos(p.life) * 15, 6, 0, Math.PI * 2);
+                                ctx.fill();
+                            }
+                        } else {
+                            ctx.strokeStyle = p.color || "#00e676";
+                            ctx.lineWidth = 3;
+                            ctx.beginPath();
+                            ctx.arc(p.x, p.y, p.curRadius, 0, Math.PI * 2);
+                            ctx.stroke();
+                            ctx.fillStyle = p.color || "#00e676";
+                            ctx.globalAlpha = 0.15;
+                            ctx.fill();
+                        }
+                        ctx.restore();
+
+                    } else if (p.attackType === 'spit') {
+                        ctx.save();
+                        if (p.isWater) {
+                            ctx.fillStyle = "#00b0ff";
+                            ctx.beginPath();
+                            ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+                            ctx.fill();
+                        } else {
+                            ctx.fillStyle = "#64dd17";
+                            ctx.beginPath();
+                            ctx.arc(p.x, p.y, 4.5, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                        ctx.restore();
+
+                    } else if (p.attackType === 'rock') {
+                        ctx.save();
+                        ctx.fillStyle = "#795548";
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, 6.5, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.strokeStyle = "#4e342e";
+                        ctx.lineWidth = 1.5;
+                        ctx.stroke();
+                        ctx.restore();
+                    }
+                });
+
+                if (this.infoTips.length > 0) {
+                    ctx.fillStyle = "rgba(44, 34, 30, 0.92)";
+                    ctx.fillRect(6, this.canvas.height - 32, this.canvas.width - 12, 26);
+                    ctx.fillStyle = "#fff";
+                    ctx.font = isSingle ? "bold 14px sans-serif" : "bold 12px sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText(this.infoTips[0], this.canvas.width / 2, this.canvas.height - 19);
+                }
+            }
+
+            aiAction() {
+                if (isGameOver || !isAiMode) return;
+
+                if (this.availableDraws > 0) {
+                    this.summon();
+                    return;
+                }
+
+                for (let i = 0; i < this.dock.length; i++) {
+                    for (let j = i + 1; j < this.dock.length; j++) {
+                        let u1 = this.dock[i];
+                        let u2 = this.dock[j];
+                        if (u1 && u2 && u1.type === 'base' && u2.type === 'base' && u1.val === u2.val && u1.tier === u2.tier && u2.tier < 6) {
+                            u2.tier += 1;
+                            this.dock[i] = null;
+                            this.renderDock();
+                            return;
+                        }
+                    }
+                }
+
+                for (let i = 0; i < this.dock.length; i++) {
+                    if (this.dock[i] && this.dock[i].type === 'tool') {
+                        let bestPos = null;
+                        let maxCoverage = -1;
+
+                        for (let r = 0; r < ROWS; r++) {
+                            for (let c = 0; c < COLS; c++) {
+                                if (!this.grid[r][c].isPath && !this.grid[r][c].unlocked) {
+                                    let coverage = 0;
+                                    for (let p of selectedMap.path) {
+                                        if (Math.hypot(p.r - r, p.c - c) <= 2) coverage++;
+                                    }
+                                    if (coverage > maxCoverage) {
+                                        maxCoverage = coverage;
+                                        bestPos = { r, c };
+                                    }
+                                }
+                            }
+                        }
+
+                        if (bestPos) {
+                            this.grid[bestPos.r][bestPos.c].unlocked = true;
+                            this.dock[i] = null;
+                            this.renderDock();
+                            return;
+                        }
+                    }
+                }
+
+                for (let i = 0; i < this.dock.length; i++) {
+                    let it = this.dock[i];
+                    if (it && it.type === 'base') {
+                        for (let r = 0; r < ROWS; r++) {
+                            for (let c = 0; c < COLS; c++) {
+                                let cl = this.grid[r][c];
+                                if (cl.unlocked && cl.unit && cl.unit.kind === 'base' && cl.unit.name === it.val && cl.unit.tier === it.tier && cl.unit.tier < 6) {
+                                    cl.unit.tier += 1;
+                                    this.dock[i] = null;
+                                    this.renderDock();
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                for (let i = 0; i < this.dock.length; i++) {
+                    let it = this.dock[i];
+                    if (!it) continue;
+
+                    let bestPos = null;
+                    let maxCoverage = -1;
+
+                    for (let r = 0; r < ROWS; r++) {
+                        for (let c = 0; c < COLS; c++) {
+                            let cl = this.grid[r][c];
+                            if (cl.unlocked && !cl.isPath && !cl.unit) {
+                                let coverage = 0;
+                                for (let p of selectedMap.path) {
+                                    if (Math.hypot(p.r - r, p.c - c) <= 2) coverage++;
+                                }
+                                if (coverage > maxCoverage) {
+                                    maxCoverage = coverage;
+                                    bestPos = { r, c };
+                                }
+                            }
+                        }
+                    }
+
+                    if (bestPos) {
+                        this.applyPlacement(bestPos.r, bestPos.c, it, i);
+                        this.renderDock();
+                        this.detectFormations();
+                        return;
+                    }
+                }
+            }
+        }
+
+        const p1 = new PlayerState(1, 'canvas-p1', 'p1-dock', 'p1-stats', 'p1-summon-btn', 'p1-side');
+        const p2 = new PlayerState(2, 'canvas-p2', 'p2-dock', 'p2-stats', 'p2-summon-btn', 'p2-side');
+        const p3 = new PlayerState(3, 'canvas-p3', 'p3-dock', 'p3-stats', 'p3-summon-btn', 'p3-side');
+        const players = [p1, p2, p3];
+
+        const landingPage = document.getElementById('landing-page');
+        const btnTabTower = document.getElementById('btn-tab-tower');
+        const btnTabPk = document.getElementById('btn-tab-pk');
+        const landingTowerPanel = document.getElementById('landing-tower-panel');
+        const landingPkPanel = document.getElementById('landing-pk-panel');
+        const btnEnterTower = document.getElementById('btn-enter-tower');
+        const btnEnterPk = document.getElementById('btn-enter-pk');
+        const towerView = document.getElementById('tower-view');
+        const towerViewport = document.getElementById('tower-viewport');
+        const towerMapArea = document.getElementById('tower-map-area');
+        const towerSvg = document.getElementById('tower-svg-paths');
+        const towerBackBtn = document.getElementById('tower-back-btn');
+        const returnMenuBtn = document.getElementById('return-menu-btn');
+        const raidBanner = document.getElementById('raid-banner');
+        const goldCounter = document.getElementById('gold-counter');
+        const shopFloatBtn = document.getElementById('shop-float-btn');
+        document.getElementById('postbattle-shop-btn').style.display = 'none';
+        const shopModal = document.getElementById('shop-modal');
+        const closeShopBtn = document.getElementById('close-shop-btn');
+        const gameoverModal = document.getElementById('gameover-modal');
+        const audioToggleBtn = document.getElementById('audio-toggle-btn');
+
+        audioToggleBtn.addEventListener('click', () => {
+            sound.init();
+            sound.enabled = !sound.enabled;
+            audioToggleBtn.innerText = sound.enabled ? "🔊 音效：開" : "🔇 音效：關";
+            audioToggleBtn.style.background = sound.enabled ? "#4caf50" : "#757575";
+        });
+
+        btnTabTower.onclick = () => {
+            sound.init();
+            btnTabTower.classList.add('active');
+            btnTabPk.classList.remove('active');
+            landingTowerPanel.style.display = 'block';
+            landingPkPanel.style.display = 'none';
+        };
+
+        btnTabPk.onclick = () => {
+            sound.init();
+            btnTabPk.classList.add('active');
+            btnTabTower.classList.remove('active');
+            landingPkPanel.style.display = 'block';
+            landingTowerPanel.style.display = 'none';
+        };
+
+        function toChineseStageName(n) {
+            const chNums = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+            if (n <= 10) return `第${chNums[n]}關`;
+            if (n < 20) return `第十${n % 10 === 0 ? '' : chNums[n % 10]}關`;
+            if (n === 100) return `第一百關`;
+            let tens = Math.floor(n / 10);
+            let ones = n % 10;
+            return `第${chNums[tens]}十${ones === 0 ? '' : chNums[ones]}關`;
+        }
+
+        const TOTAL_STAGES = 100;
+        const STAGE_GAP_Y = 120;
+        const TOTAL_MAP_HEIGHT = TOTAL_STAGES * STAGE_GAP_Y + 200;
+        let towerPoints = [];
+
+        function build100StagesMap() {
+            const oldNodes = towerMapArea.querySelectorAll('.tower-stage-node');
+            oldNodes.forEach(n => n.remove());
+
+            towerMapArea.style.height = `${TOTAL_MAP_HEIGHT}px`;
+            towerPoints = [];
+
+            for (let i = 1; i <= TOTAL_STAGES; i++) {
+                let posY = TOTAL_MAP_HEIGHT - 100 - (i - 1) * STAGE_GAP_Y;
+                let sinOffset = Math.sin(i * 1.35) * 110;
+                let posX = 220 + sinOffset;
+                towerPoints.push({ stage: i, x: posX, y: posY });
+            }
+
+            let pathD = `M ${towerPoints[0].x} ${towerPoints[0].y}`;
+            for (let i = 1; i < towerPoints.length; i++) {
+                let pPrev = towerPoints[i - 1];
+                let pCur = towerPoints[i];
+                let midY = (pPrev.y + pCur.y) / 2;
+                pathD += ` C ${pPrev.x} ${midY}, ${pCur.x} ${midY}, ${pCur.x} ${pCur.y}`;
+            }
+
+            towerSvg.setAttribute('viewBox', `0 0 440 ${TOTAL_MAP_HEIGHT}`);
+            towerSvg.innerHTML = `
+                <path d="${pathD}" fill="none" stroke="#1b3017" stroke-width="18" stroke-linecap="round" />
+                <path d="${pathD}" fill="none" stroke="#5b8c3a" stroke-width="12" stroke-linecap="round" />
+                <path d="${pathD}" fill="none" stroke="#a3d977" stroke-width="3" stroke-dasharray="6,8" stroke-linecap="round" />
+            `;
+
+            towerPoints.forEach(pt => {
+                let node = document.createElement('div');
+                let isLocked = pt.stage > highestUnlockedLevel;
+                let isSpecial = (pt.stage % 5 === 0);
+
+                node.className = 'tower-stage-node' 
+                    + (isSpecial ? ' special-stage' : '') 
+                    + (isLocked ? ' locked' : '');
+
+                node.style.left = `${pt.x}px`;
+                node.style.top = `${pt.y}px`;
+
+                node.innerHTML = `
+                    <span>${toChineseStageName(pt.stage)}</span>
+                    <div class="stage-star-tray">
+                        ${levelStars[pt.stage] ? '★'.repeat(levelStars[pt.stage]) : ''}
+                    </div>
+                `;
+
+                node.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (pt.stage <= highestUnlockedLevel) {
+                        launchTowerLevel(pt.stage);
+                    }
+                });
+
+                towerMapArea.appendChild(node);
+            });
+
+            focusOnCurrentLevel();
+        }
+
+        function focusOnCurrentLevel() {
+            let curStageIdx = Math.min(highestUnlockedLevel - 1, TOTAL_STAGES - 1);
+            let curPt = towerPoints[curStageIdx] || towerPoints[0];
+            let vHeight = towerViewport.clientHeight || 520;
+            let targetTransY = -(curPt.y - vHeight * 0.65);
+            towerMapArea.style.transform = `translateY(${targetTransY}px)`;
+        }
+
+        btnEnterTower.onclick = () => {
+            sound.init();
+            landingPage.style.display = 'none';
+            towerView.style.display = 'flex';
+            build100StagesMap();
+        };
+
+        towerBackBtn.onclick = () => {
+            sound.init();
+            isPaused = false;
+            pauseOverlay.style.display = 'none';
+            towerView.style.display = 'none';
+            landingPage.style.display = 'flex';
+        };
+
+        returnMenuBtn.onclick = () => {
+            sound.init();
+            gameStarted = false;
+            isPaused = false;
+            pauseOverlay.style.display = 'none';
+            shopOpen = false;
+            shopModal.style.display = 'none';
+            battleItemBar.style.display = 'none';
+            trashBin.style.display = 'none';
+            towerView.style.display = 'none';
+            landingPage.style.display = 'flex';
+        };
+
+        function launchTowerLevel(level) {
+            // 完整重置「關卡級」狀態；不要讓上一關的倒數、狂暴狀態、計時器流入下一關。
+            gameMode = "tower";
+            currentLevel = level;
+            maxWavesForLevel = 10 + (level - 1) * 5;
+            wave = 1;
+            waveTimer = 0;
+            prepFrames = 600;
+            prepRemainingMs = 10000;
+            prepLastTimestamp = performance.now();
+            currentWaveRaid = false;
+            raidCooldown = 0;
+            aiClock = 0;
+            gameStarted = false;
+            isGameOver = false;
+            isPaused = false;
+            canOpenPostBattleShop = false;
+            resetLevelItems();
+            shopOpen = false;
+            goldenShovelsForCurrentLevel = goldenShovelBank;
+            goldenShovelBank = 0;
+            window.goldenShovelArmed = false;
+            raidBanner.style.display = 'none';
+            gameoverModal.style.display = 'none';
+
+            towerView.style.display = 'none';
+            landingPage.style.display = 'none';
+            document.getElementById('p2-side').style.display = 'none';
+            document.getElementById('p3-side').style.display = 'none';
+            document.getElementById('p1-title').innerText = `玩家 1 (主角)`;
+
+            switchMapToDifferent();
+
+            // 確保先設定好尺寸再重設內部網格與坐標
+            p1.setDimensions(420, 570, true);
+            p1.reset();
+            updateGoldenShovelUI();
+            updateBattleItemUI();
+            // 先強制繪製一次，避免關卡切換的第一個 animation frame 因其他邏輯例外而留下空白 Canvas。
+            try { p1.draw(); } catch (err) { console.error('Initial Level Render Error:', err); }
+
+            document.getElementById('game-mode-badge').innerText = `🌲 ${toChineseStageName(currentLevel)} (目標: ${maxWavesForLevel} 波)`;
+
+            shopFloatBtn.style.display = 'none';
+            startBattle();
+        }
+
+        btnEnterPk.onclick = () => {
+            sound.init();
+            gameMode = "pk";
+            let pkRadios = document.getElementsByName('landing-pk-count');
+            pkPlayerCount = pkRadios[1].checked ? 3 : 2;
+            p2IsAi = document.getElementById('landing-p2-select').value === 'ai';
+            p3IsAi = document.getElementById('landing-p3-select').value === 'ai';
+
+            landingPage.style.display = 'none';
+            shopFloatBtn.style.display = 'none';
+
+            switchMapToDifferent();
+
+            p1.setDimensions(315, 450, false);
+            p2.setDimensions(315, 450, false);
+            p3.setDimensions(315, 450, false);
+
+            p1.reset();
+            p2.reset();
+            if (pkPlayerCount === 3) p3.reset();
+
+            document.getElementById('p1-title').innerText = `玩家 1`;
+            document.getElementById('p2-side').style.display = 'flex';
+            document.getElementById('p2-title').innerText = `玩家 2 (${p2IsAi ? '電腦' : '真人'})`;
+
+            if (pkPlayerCount === 3) {
+                document.getElementById('p3-side').style.display = 'flex';
+                document.getElementById('p3-title').innerText = `玩家 3 (${p3IsAi ? '電腦' : '真人'})`;
+            } else {
+                document.getElementById('p3-side').style.display = 'none';
+            }
+
+            document.getElementById('game-mode-badge').innerText = `⚔️ PK 對決模式 (${pkPlayerCount} 人混戰)`;
+
+            maxWavesForLevel = 999;
+            startBattle();
+        };
+
+        function startBattle() {
+            wave = 1;
+            waveTimer = 0;
+            prepFrames = 600;
+            prepRemainingMs = 10000;
+            prepLastTimestamp = performance.now();
+            gameStarted = true;
+            isGameOver = false;
+            isPaused = false;
+            shopOpen = false;
+            canOpenPostBattleShop = false;
+            window.goldenShovelArmed = false;
+            pauseOverlay.style.display = 'none';
+            pauseBtn.innerText = '⏸️ 暫停';
+
+            document.getElementById('countdown-banner').style.display = 'inline';
+            document.getElementById('countdown-banner').innerText = `布陣準備：10 秒`;
+            document.getElementById('wave-counter').innerText = `第 1 波次`;
+
+            sound.startBGM();
+            updateBattleItemUI();
+
+            let activeCount = (gameMode === "tower" ? 1 : pkPlayerCount);
+            for (let i = 0; i < activeCount; i++) {
+                players[i].summon();
+            }
+        }
+
+        const trashBin = document.getElementById('trash-bin');
+        const battleItemBar = document.getElementById('battle-item-bar');
+        const itemStatusText = document.getElementById('item-status-text');
+        const itemPoisonBtn = document.getElementById('item-poison-btn');
+        const itemIceBtn = document.getElementById('item-ice-btn');
+        const itemVolcanoBtn = document.getElementById('item-volcano-btn');
+
+        function updateGoldenShovelUI() {
+            const slot = document.getElementById('p1-golden-shovel-slot');
+            if (!slot) return;
+            const visible = gameMode === 'tower' && gameStarted && !isGameOver && goldenShovelsForCurrentLevel > 0;
+            slot.style.display = visible ? 'inline-flex' : 'none';
+            slot.innerHTML = `⛏️<br>×${goldenShovelsForCurrentLevel}`;
+            slot.title = visible ? '拖曳金色鏟子到戰場格子使用' : '尚未購買金色鏟子';
+        }
+
+        function updateBattleItemUI() {
+            const towerBattle = gameMode === 'tower' && currentLevel >= 5 && gameStarted && !isGameOver && !isPaused && !shopOpen;
+            battleItemBar.style.display = towerBattle ? 'flex' : 'none';
+            trashBin.style.display = (towerBattle && levelItems.trash) ? 'flex' : 'none';
+
+            itemPoisonBtn.disabled = !levelItems.poison || levelItems.poisonUsed || levelItems.poisonWavesRemaining > 0;
+            itemIceBtn.disabled = !levelItems.ice || levelItems.iceUsed;
+            itemVolcanoBtn.disabled = !levelItems.volcano || levelItems.volcanoUsed;
+
+            itemPoisonBtn.innerText = levelItems.poisonUsed ? '☠️ 毒藥 ✓' : (levelItems.poisonWavesRemaining > 0 ? `☠️ 毒藥 (${levelItems.poisonWavesRemaining}波)` : (levelItems.poison ? '☠️ 毒藥・啟用' : '☠️ 毒藥'));
+            itemIceBtn.innerText = levelItems.iceUsed ? '❄️ 冰河時期 ✓' : '❄️ 冰河時期';
+            itemVolcanoBtn.innerText = levelItems.volcanoUsed ? '🌋 火山爆發 ✓' : (levelItems.volcano && levelItems.volcanoFrames > 0 ? `🌋 火山 ${Math.ceil(levelItems.volcanoFrames / 60)}s` : '🌋 火山爆發');
+
+            const statuses = [];
+            if (levelItems.bulldozer) statuses.push(levelItems.bulldozerUsed ? '🚜 推土機已使用' : '🚜 推土機待命');
+            if (goldenShovelsForCurrentLevel > 0) statuses.push(`⛏️ 金色鏟子 ×${goldenShovelsForCurrentLevel}`);
+            if (levelItems.volcano && levelItems.volcanoFrames > 0) statuses.push(`🌋 岩漿 ${Math.ceil(levelItems.volcanoFrames / 60)}秒`);
+            itemStatusText.innerText = statuses.length ? statuses.join('　') : '商店道具';
+        }
+
+        function updateShopButtons() {
+            const map = {
+                'buy-trash-btn': levelItems.trash,
+                'buy-bulldozer-btn': levelItems.bulldozer,
+                'buy-poison-btn': levelItems.poison,
+                'buy-ice-btn': levelItems.ice,
+                'buy-extra-shovel-btn': levelItems.extraShovel,
+                'buy-volcano-btn': levelItems.volcano
+            };
+            Object.keys(map).forEach(id => {
+                const btn = document.getElementById(id);
+                if (!btn) return;
+                btn.disabled = map[id] || gold < SHOP_PRICE;
+                btn.innerText = map[id] ? '本關已購買' : `${SHOP_PRICE} 金幣`;
+            });
+        }
+
+        function tryBuyShopItem(onBuy) {
+            if (gameMode !== 'tower' || currentLevel < 5 || !canOpenPostBattleShop || !shopOpen || !isGameOver) return;
+            if (gold < SHOP_PRICE) { alert('金幣不足！需要 150 金幣。'); return; }
+            if (!onBuy()) return;
+            gold -= SHOP_PRICE;
+            updateGoldDisplay();
+            sound.playLevelUp();
+            updateBattleItemUI();
+            updateShopButtons();
+        }
+
+        function openPostBattleShop() {
+            if (!canOpenPostBattleShop || gameMode !== 'tower' || currentLevel < 5) return;
+            sound.init();
+            shopOpen = true;
+            shopModal.style.display = 'flex';
+            updateShopButtons();
+        }
+        shopFloatBtn.onclick = () => {};
+        closeShopBtn.onclick = () => { shopOpen = false; shopModal.style.display = 'none'; };
+        document.getElementById('postbattle-shop-btn').onclick = openPostBattleShop;
+
+        document.getElementById('buy-trash-btn').onclick = () => tryBuyShopItem(() => {
+            if (levelItems.trash) return false;
+            levelItems.trash = true;
+            return true;
+        });
+
+        document.getElementById('buy-bulldozer-btn').onclick = () => tryBuyShopItem(() => {
+            if (levelItems.bulldozer) return false;
+            levelItems.bulldozer = true;
+            return true;
+        });
+
+        document.getElementById('buy-poison-btn').onclick = () => tryBuyShopItem(() => {
+            if (levelItems.poison) return false;
+            levelItems.poison = true;
+            levelItems.poisonUsed = false;
+            levelItems.poisonWavesRemaining = 0;
+            return true;
+        });
+
+        document.getElementById('buy-ice-btn').onclick = () => tryBuyShopItem(() => {
+            if (levelItems.ice) return false;
+            levelItems.ice = true;
+            return true;
+        });
+
+        document.getElementById('buy-extra-shovel-btn').onclick = () => tryBuyShopItem(() => {
+            if (levelItems.extraShovel) return false;
+            levelItems.extraShovel = true;
+            goldenShovelBank += 2;
+            return true;
+        });
+
+        document.getElementById('buy-volcano-btn').onclick = () => tryBuyShopItem(() => {
+            if (levelItems.volcano) return false;
+            levelItems.volcano = true;
+            return true;
+        });
+
+        itemPoisonBtn.onclick = () => {
+            if (!levelItems.poison || levelItems.poisonUsed || levelItems.poisonWavesRemaining > 0 || isGameOver) return;
+            levelItems.poisonWavesRemaining = 5;
+            updateBattleItemUI();
+        };
+
+        itemIceBtn.onclick = () => {
+            if (!levelItems.ice || levelItems.iceUsed || isGameOver) return;
+            levelItems.iceUsed = true;
+            p1.enemies.forEach(en => en.frozen = true);
+            updateBattleItemUI();
+            sound.playAoE();
+        };
+
+        itemVolcanoBtn.onclick = () => {
+            if (!levelItems.volcano || levelItems.volcanoUsed || isGameOver || isPaused) return;
+            levelItems.volcanoUsed = true;
+            levelItems.volcanoFrames = 30 * 60;
+            levelItems.volcanoTick = 0;
+            updateBattleItemUI();
+            sound.playBurst();
+        };
+
+        window.goldenShovelArmed = false;
+
+        function updateGoldDisplay() {
+            goldCounter.innerText = `💰 金幣: ${gold}`;
+            if (typeof updateShopButtons === 'function') updateShopButtons();
+            updateGoldenShovelUI();
+        }
+
+        function handleLevelComplete(isWin) {
+            isGameOver = true;
+            gameStarted = false;
+            isPaused = false;
+            raidBanner.style.display = 'none';
+            shopOpen = false;
+            shopModal.style.display = 'none';
+            shopFloatBtn.style.display = 'none';
+            canOpenPostBattleShop = (gameMode === 'tower' && isWin && currentLevel >= 5);
+            document.getElementById('postbattle-shop-btn').style.display = canOpenPostBattleShop ? 'inline-block' : 'none';
+            window.goldenShovelArmed = false;
+            battleItemBar.style.display = 'none';
+            trashBin.style.display = 'none';
+            gameoverModal.style.display = 'flex';
+            let titleEl = document.getElementById('gameover-title');
+            let descEl = document.getElementById('gameover-desc');
+            let starsEl = document.getElementById('gameover-stars');
+
+            if (gameMode === "tower") {
+                if (isWin) {
+                    titleEl.innerText = `🎉 恭喜通關 ${toChineseStageName(currentLevel)}！`;
+                    let stars = 1;
+                    let reward = 10;
+                    if (p1.hp === 5) { stars = 3; reward = 30; }
+                    else if (p1.hp === 4) { stars = 2; reward = 20; }
+
+                    gold += reward;
+                    updateGoldDisplay();
+                    levelStars[currentLevel] = Math.max(levelStars[currentLevel] || 0, stars);
+
+                    if (currentLevel === highestUnlockedLevel && highestUnlockedLevel < TOTAL_STAGES) {
+                        highestUnlockedLevel++;
+                    }
+
+                    starsEl.innerText = '★'.repeat(stars) + '☆'.repeat(3 - stars);
+                    descEl.innerText = `剩餘血量: ${p1.hp}/5\n獲得評價: ${stars} 星\n獲得獎勵金幣: +${reward} 金幣！`;
+                } else {
+                    titleEl.innerText = `💀 試煉失敗`;
+                    starsEl.innerText = '';
+                    descEl.innerText = `陣地失守，請重新調整防線佈局！`;
+                }
+            } else {
+                document.getElementById('postbattle-shop-btn').style.display = 'none';
+                titleEl.innerText = `⚔️ PK 戰鬥結束`;
+                starsEl.innerText = '';
+                let alive = [];
+                if (p1.hp > 0) alive.push("玩家 1");
+                if (p2.hp > 0) alive.push("玩家 2");
+                if (pkPlayerCount === 3 && p3.hp > 0) alive.push("玩家 3");
+                descEl.innerText = alive.length > 0 ? `勝出陣營：${alive.join("、")}！` : "同歸於盡，平局！";
+            }
+        }
+
+        document.getElementById('gameover-confirm-btn').onclick = () => {
+            gameoverModal.style.display = 'none';
+            shopOpen = false;
+            shopModal.style.display = 'none';
+            canOpenPostBattleShop = false;
+            window.goldenShovelArmed = false;
+            if (gameMode === "tower") {
+                towerView.style.display = 'flex';
+                build100StagesMap();
+            } else {
+                landingPage.style.display = 'flex';
+            }
+        };
+
+        const pauseBtn = document.getElementById('pause-btn');
+        const pauseOverlay = document.getElementById('pause-overlay');
+        const resumeBtn = document.getElementById('resume-btn');
+        function setPaused(paused) {
+            if (!gameStarted || isGameOver || shopOpen) return;
+            isPaused = paused;
+            // 暫停期間不扣除準備時間，重新開始時從當下時間繼續計算。
+            prepLastTimestamp = performance.now();
+            pauseOverlay.style.display = isPaused ? 'flex' : 'none';
+            pauseBtn.innerText = isPaused ? '▶️ 繼續' : '⏸️ 暫停';
+            updateBattleItemUI();
+            updateGoldenShovelUI();
+        }
+        pauseBtn.onclick = () => setPaused(!isPaused);
+        resumeBtn.onclick = () => setPaused(false);
+
+        let aiClock = 0;
+        function gameLoop() {
+            // 更新、全域波次邏輯、繪圖分開隔離。
+            // 之前只要 update() 任一行拋錯，整個 try 會直接跳到 catch，連 p1.draw() 都不會執行，
+            // 因此 Canvas 只剩原始的米白背景，看起來就像「第二關白畫面」。
+            if (gameStarted && !isGameOver && !shopOpen && !isPaused) {
+                try {
+                    if (prepRemainingMs > 0) {
+                        // 使用真實時間差計算倒數，因此在 60Hz、120Hz、144Hz 等刷新率下
+                        // 都會維持與現實世界一致的 10 秒。
+                        const now = performance.now();
+                        if (!prepLastTimestamp) prepLastTimestamp = now;
+                        const elapsed = Math.max(0, Math.min(250, now - prepLastTimestamp));
+                        prepLastTimestamp = now;
+                        prepRemainingMs = Math.max(0, prepRemainingMs - elapsed);
+                        prepFrames = Math.ceil(prepRemainingMs / (1000 / 60));
+
+                        const secLeft = Math.ceil(prepRemainingMs / 1000);
+                        document.getElementById('countdown-banner').innerText = `布陣準備：${secLeft} 秒`;
+                        if (prepRemainingMs <= 0) {
+                            document.getElementById('countdown-banner').style.display = 'none';
+                            let activeCount = (gameMode === "tower" ? 1 : pkPlayerCount);
+                            for (let i = 0; i < activeCount; i++) players[i].queueWave(wave, false);
+                            if (gameMode === 'tower' && levelItems.poisonWavesRemaining > 0) {
+                                levelItems.poisonWavesRemaining--;
+                                if (levelItems.poisonWavesRemaining <= 0) levelItems.poisonUsed = true;
+                            }
+                            updateBattleItemUI();
+                        }
+                    } else {
+                        waveTimer++;
+
+                        if (raidCooldown > 0) {
+                            raidCooldown--;
+                            if (raidCooldown <= 0) raidBanner.style.display = 'none';
+                        }
+
+                        if (waveTimer >= 680) {
+                            waveTimer = 0;
+                            let activeCount = (gameMode === "tower" ? 1 : pkPlayerCount);
+                            if (wave % 5 === 0) {
+                                for (let i = 0; i < activeCount; i++) players[i].giveFreeShovel();
+                            }
+
+                            wave++;
+                            document.getElementById('wave-counter').innerText = `第 ${wave} 波次`;
+
+                            if (gameMode === "tower" && wave > maxWavesForLevel) {
+                                handleLevelComplete(true);
+                            } else {
+                                // PK 前 10 波固定不觸發狂暴；第 11 波開始才恢復機率。
+                                if (gameMode === "pk" && wave <= 10) {
+                                    currentWaveRaid = false;
+                                } else if (gameMode === "tower" && currentLevel <= 3) {
+                                    currentWaveRaid = false;
+                                } else {
+                                    let raidChance = (gameMode === "tower" && currentLevel % 5 === 0) ? 0.30 : 0.15;
+                                    currentWaveRaid = Math.random() < raidChance;
+                                }
+
+                                if (currentWaveRaid) {
+                                    raidBanner.style.display = 'block';
+                                    raidBanner.innerText = `🚨 狂暴模式爆發！(一般怪量 3 倍 / 首領血量 3 倍！) 🚨`;
+                                    raidCooldown = 180;
+                                    sound.playRaidAlert();
+                                    document.getElementById('wave-counter').innerText = `🔥 第 ${wave} 波 (狂暴突襲！)`;
+                                }
+
+                                for (let i = 0; i < activeCount; i++) players[i].queueWave(wave, currentWaveRaid);
+                                if (gameMode === 'tower' && levelItems.poisonWavesRemaining > 0) {
+                                    levelItems.poisonWavesRemaining--;
+                                    if (levelItems.poisonWavesRemaining <= 0) levelItems.poisonUsed = true;
+                                }
+                                updateBattleItemUI();
+                            }
+                        }
+                    }
+
+                    if (gameStarted && !isGameOver) {
+                        let activeCount = (gameMode === "tower" ? 1 : pkPlayerCount);
+                        for (let i = 0; i < activeCount; i++) {
+                            try {
+                                players[i].update();
+                            } catch (err) {
+                                console.error(`Player ${i + 1} Update Error:`, err);
+                            }
+                        }
+
+                        aiClock++;
+                        if (aiClock > 25) {
+                            aiClock = 0;
+                            if (gameMode === "pk") {
+                                try { if (p2IsAi) p2.aiTick(); } catch (err) { console.error('P2 AI Error:', err); }
+                                try { if (pkPlayerCount === 3 && p3IsAi) p3.aiTick(); } catch (err) { console.error('P3 AI Error:', err); }
+                            }
+                        }
+
+                        if (gameMode === "tower" && p1.hp <= 0) {
+                            handleLevelComplete(false);
+                        } else if (gameMode === "pk") {
+                            let deadCount = 0;
+                            if (p1.hp <= 0) deadCount++;
+                            if (p2.hp <= 0) deadCount++;
+                            if (pkPlayerCount === 3 && p3.hp <= 0) deadCount++;
+                            if (deadCount >= pkPlayerCount - 1) handleLevelComplete(true);
+                        }
+                    }
+                } catch (err) {
+                    // 只記錄波次控制錯誤，不要讓它阻止 Canvas 繪製。
+                    console.error("Game State Error:", err);
+                }
+            }
+
+            // 繪圖永遠獨立執行；即使 update 有問題，也不能讓 Canvas 變成空白。
+            try { p1.draw(); } catch (err) { console.error('P1 Draw Error:', err); }
+            if (gameMode === "pk") {
+                try { p2.draw(); } catch (err) { console.error('P2 Draw Error:', err); }
+                if (pkPlayerCount === 3) {
+                    try { p3.draw(); } catch (err) { console.error('P3 Draw Error:', err); }
+                }
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        requestAnimationFrame(gameLoop);
+    </script>
+</body>
+</html>
