@@ -677,10 +677,246 @@
             border-color: #c62828;
             transform: scale(1.08);
         }
+
+        .pk-desktop-warning {
+            width: 100%;
+            margin: 0 0 10px 0;
+            padding: 8px 10px;
+            border: 2px solid #d32f2f;
+            border-radius: 9px;
+            background: #ffebee;
+            color: #c62828;
+            font-size: 14px;
+            font-weight: 900;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(211,47,47,0.15);
+        }
+
         @media (max-width: 760px) {
-            #battle-item-bar { top: 84px; }
-            #trash-bin { right: 8px; bottom: 90px; width: 74px; height: 74px; }
+            html, body {
+                width: 100%;
+                min-height: 100%;
+                overflow: hidden;
+            }
+
+            #landing-page {
+                width: 100vw;
+                height: 100dvh;
+                min-height: 100dvh;
+                justify-content: flex-start;
+                align-items: center;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                padding: max(10px, env(safe-area-inset-top)) 8px max(10px, env(safe-area-inset-bottom));
+            }
+            .landing-title {
+                font-size: clamp(28px, 8vw, 40px);
+                letter-spacing: 2px;
+                margin-top: 4px;
+            }
+            .landing-subtitle {
+                font-size: 12px;
+                margin-bottom: 10px;
+                letter-spacing: 1px;
+            }
+            .landing-card {
+                width: 100%;
+                max-width: 560px;
+                padding: 12px;
+                border-width: 3px;
+                border-radius: 14px;
+                margin-bottom: 10px;
+            }
+            .instructions-box {
+                padding: 9px 11px;
+                font-size: 12px;
+                line-height: 1.45;
+                margin-bottom: 10px;
+            }
+            .instructions-box h3 {
+                font-size: 14px;
+            }
+            .instructions-box ul {
+                padding-left: 17px;
+            }
+            .instructions-box li {
+                margin-bottom: 2px;
+            }
+            .mode-selection-zone { gap: 8px; }
+            .mode-tabs { gap: 6px; }
+            .mode-tab-btn {
+                padding: 8px 6px;
+                font-size: 13px;
+            }
+            .mode-detail-panel {
+                padding: 10px;
+                font-size: 12px;
+                line-height: 1.45;
+            }
+            .mode-detail-panel .btn {
+                width: 100%;
+                min-height: 46px;
+                font-size: 15px !important;
+            }
+            .pk-desktop-warning {
+                font-size: 12px;
+                padding: 7px 8px;
+                margin-bottom: 8px;
+            }
+
+            /* 主線戰鬥：整個遊戲面板以手機可視高度為上限，不讓底部生物欄被推出螢幕。 */
+            #top-bar {
+                width: 100vw;
+                max-width: 100vw;
+                margin: 0;
+                padding: 3px 4px;
+                border-radius: 0;
+                border-width: 0 0 2px 0;
+                gap: 3px;
+                flex-wrap: wrap;
+                justify-content: center;
+                font-size: 10px;
+                line-height: 1.1;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.24);
+                flex-shrink: 0;
+            }
+            #game-mode-badge, #wave-counter, #countdown-banner, #gold-counter {
+                white-space: nowrap;
+            }
+            #game-mode-badge { max-width: 86px; overflow: hidden; text-overflow: ellipsis; }
+            #wave-counter { max-width: 52px; overflow: hidden; text-overflow: ellipsis; }
+            #countdown-banner { max-width: 68px; overflow: hidden; }
+            #gold-counter { max-width: 64px; overflow: hidden; text-overflow: ellipsis; }
+            .top-btn {
+                padding: 3px 5px;
+                font-size: 10px;
+                border-width: 1px;
+                border-radius: 5px;
+            }
+
+            #game-arena {
+                width: 100vw;
+                max-width: 100vw;
+                height: calc(100dvh - var(--topbar-height, 46px));
+                max-height: calc(100dvh - var(--topbar-height, 46px));
+                padding: 4px;
+                gap: 0;
+                border-radius: 0;
+                overflow: hidden;
+                align-items: stretch;
+                justify-content: center;
+                flex: 1 1 auto;
+            }
+            .player-side {
+                width: min(100%, calc(100vw - 8px));
+                max-width: calc(100vw - 8px);
+                height: 100%;
+                max-height: 100%;
+                padding: 5px;
+                border-width: 2px;
+                border-radius: 9px;
+                overflow: hidden;
+            }
+            .player-side.single-mode {
+                width: min(100%, calc(100vw - 8px));
+                max-width: calc(100vw - 8px);
+                height: 100%;
+                padding: 5px;
+                border-width: 2px;
+            }
+            .player-side.single-mode .side-header {
+                flex: 0 0 auto;
+                font-size: 12px;
+                padding: 4px 7px;
+                margin-bottom: 4px;
+                min-height: 30px;
+            }
+            .player-side canvas {
+                display: block;
+                flex: 0 0 auto;
+                max-width: 100%;
+                margin: 0 auto;
+                border-width: 2px;
+            }
+            .dock-container {
+                width: 100%;
+                margin-top: 4px;
+                padding: 4px;
+                gap: 4px;
+                flex: 0 0 auto;
+            }
+            .player-side.single-mode .dock-container {
+                margin-top: 4px;
+                padding: 4px;
+                gap: 5px;
+            }
+            .dock-slots {
+                gap: 3px;
+                width: 100%;
+                justify-content: space-between;
+            }
+            .player-side.single-mode .dock-slot {
+                width: calc((100% - 24px) / 9);
+                max-width: 44px;
+                min-width: 0;
+                height: clamp(38px, 11vw, 52px);
+                font-size: clamp(15px, 5vw, 20px);
+                border-radius: 6px;
+            }
+            .player-side.single-mode .dock-slot .badge {
+                font-size: 9px;
+                top: 1px;
+                right: 1px;
+            }
+            .controls-box {
+                gap: 5px;
+                margin-top: 2px;
+            }
+            .player-side.single-mode button.btn {
+                padding: 6px 10px;
+                font-size: 13px;
+                min-height: 40px;
+            }
+            #p1-golden-shovel-slot {
+                width: 44px;
+                height: 44px;
+                min-width: 44px;
+                min-height: 44px;
+                font-size: 10px;
+            }
+
+            #battle-item-bar { top: 84px; max-width: 96vw; }
+            #trash-bin { right: 8px; bottom: 90px; width: 68px; height: 68px; }
             .shop-grid { grid-template-columns: 1fr; max-height: 62vh; }
+
+            #tower-view {
+                height: 100dvh;
+                min-height: 100dvh;
+                padding: max(8px, env(safe-area-inset-top)) 7px max(8px, env(safe-area-inset-bottom));
+            }
+            .tower-header-panel {
+                width: 100%;
+                max-width: 560px;
+                padding: 7px 9px;
+            }
+            .tower-header-panel > div:first-child { font-size: clamp(16px, 5vw, 20px) !important; }
+            .tower-header-panel > div:last-child { font-size: 11px !important; line-height: 1.3; }
+            .tower-viewport-container {
+                width: 100%;
+                max-width: 440px;
+                min-height: 0;
+                flex: 1 1 auto;
+                margin: 6px 0;
+            }
+            #tower-view > div:last-child {
+                flex: 0 0 auto;
+                margin-top: 4px !important;
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+            #tower-view > div:last-child .btn {
+                min-height: 42px;
+                padding: 7px 20px !important;
+            }
         }
     </style>
 </head>
@@ -719,6 +955,7 @@
                 </div>
 
                 <div id="landing-pk-panel" class="mode-detail-panel" style="display: none;">
+                    <div class="pk-desktop-warning">⚠️ 建議使用電腦版遊玩 PK 模式，以獲得完整操作空間與最佳體驗。</div>
                     <div class="instructions-box" style="margin-bottom:12px; background:#fff8ef; border-color:#ffcc80;">
                         <h3 style="color:#e65100;">⚔️ 多人 PK 競技場說明</h3>
                         <ul>
@@ -3216,6 +3453,71 @@
         const p3 = new PlayerState(3, 'canvas-p3', 'p3-dock', 'p3-stats', 'p3-summon-btn', 'p3-side');
         const players = [p1, p2, p3];
 
+        function syncMobileViewportHeight() {
+            const topBar = document.getElementById('top-bar');
+            if (!topBar) return;
+            const h = Math.ceil(topBar.getBoundingClientRect().height || 46);
+            document.documentElement.style.setProperty('--topbar-height', `${h}px`);
+        }
+
+        function fitTowerBattleToViewport() {
+            if (gameMode !== 'tower') return;
+            const mobile = window.matchMedia && window.matchMedia('(max-width: 760px)').matches;
+            if (!mobile) {
+                p1.setDimensions(420, 570, true);
+                p1.reset();
+                return;
+            }
+
+            syncMobileViewportHeight();
+            const viewportH = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+            const viewportW = window.innerWidth;
+            const arena = document.getElementById('game-arena');
+            const side = document.getElementById('p1-side');
+            const header = side.querySelector('.side-header');
+            const dock = document.getElementById('p1-dock-box');
+            const arenaPad = 8;
+            const topH = document.getElementById('top-bar').getBoundingClientRect().height || 46;
+
+            side.style.width = `${Math.max(1, viewportW - arenaPad)}px`;
+            side.style.maxWidth = `${Math.max(1, viewportW - arenaPad)}px`;
+            arena.style.height = `${Math.max(1, viewportH - topH)}px`;
+            arena.style.maxHeight = `${Math.max(1, viewportH - topH)}px`;
+
+            const headerH = header.getBoundingClientRect().height || 30;
+            const dockH = dock.getBoundingClientRect().height || 108;
+            const sidePadBorder = 18;
+            const availableH = Math.max(260, viewportH - topH - headerH - dockH - sidePadBorder);
+            const availableW = Math.max(260, viewportW - 16);
+            const scale = Math.min(1, availableW / 420, availableH / 570);
+            const cw = Math.max(260, Math.floor(420 * scale));
+            const ch = Math.max(353, Math.floor(570 * scale));
+
+            p1.setDimensions(cw, ch, true);
+        }
+
+        window.addEventListener('resize', () => {
+            syncMobileViewportHeight();
+            if (gameStarted && gameMode === 'tower') {
+                const oldHp = p1.hp;
+                fitTowerBattleToViewport();
+                p1.hp = oldHp;
+                p1.draw();
+            }
+        });
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', () => {
+                syncMobileViewportHeight();
+                if (gameStarted && gameMode === 'tower') {
+                    const oldHp = p1.hp;
+                    fitTowerBattleToViewport();
+                    p1.hp = oldHp;
+                    p1.draw();
+                }
+            });
+        }
+
+
         const landingPage = document.getElementById('landing-page');
         const btnTabTower = document.getElementById('btn-tab-tower');
         const btnTabPk = document.getElementById('btn-tab-pk');
@@ -3349,7 +3651,8 @@
             sound.init();
             landingPage.style.display = 'none';
             towerView.style.display = 'flex';
-            build100StagesMap();
+            syncMobileViewportHeight();
+            requestAnimationFrame(() => build100StagesMap());
         };
 
         towerBackBtn.onclick = () => {
@@ -3400,14 +3703,16 @@
 
             towerView.style.display = 'none';
             landingPage.style.display = 'none';
+            syncMobileViewportHeight();
             document.getElementById('p2-side').style.display = 'none';
             document.getElementById('p3-side').style.display = 'none';
             document.getElementById('p1-title').innerText = `玩家 1 (主角)`;
 
             switchMapToDifferent();
 
-            // 確保先設定好尺寸再重設內部網格與坐標
+            // 依手機可視高度動態縮放主線戰場，確保 Canvas + 生物欄完整落在螢幕內。
             p1.setDimensions(420, 570, true);
+            fitTowerBattleToViewport();
             p1.reset();
             updateGoldenShovelUI();
             updateBattleItemUI();
