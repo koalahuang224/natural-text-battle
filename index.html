@@ -918,6 +918,32 @@
                 padding: 7px 20px !important;
             }
         }
+
+        /* 戰鬥道具與金色鏟子同屬左下控制區；商店不再出現在戰鬥畫面上方。 */
+        #battle-item-bar { display:none !important; }
+        #battle-inventory-bar {
+            display:none; position:static; gap:4px; align-items:flex-end; justify-content:flex-start;
+            flex:0 0 auto; pointer-events:auto;
+        }
+        .battle-inventory-slot {
+            width:44px; height:52px; min-width:44px; border:2px solid #7a8a65; border-radius:8px;
+            background:linear-gradient(180deg,#fffef1,#e8efd9); color:#26351f; font-weight:900;
+            font-size:10px; line-height:1.05; padding:2px; display:inline-flex; flex-direction:column;
+            align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,.35); touch-action:manipulation;
+        }
+        .battle-inventory-slot:disabled { opacity:.58; filter:grayscale(.25); }
+        #shop-float-btn {
+            display:none; position:absolute; right:16px; top:50%; transform:translateY(-50%);
+            width:92px; min-height:58px; border-radius:14px; border:3px solid #ffd54f;
+            background:linear-gradient(180deg,#ef6c00,#bf360c); color:#fff; font-size:18px; font-weight:900;
+            box-shadow:0 6px 18px rgba(0,0,0,.4); cursor:pointer; z-index:40; text-align:center;
+            padding:8px;
+        }
+        #shop-float-btn::after { content:'商店'; display:block; font-size:12px; margin-top:2px; }
+        @media (max-width:600px) {
+            #shop-float-btn { right:8px; width:76px; min-height:50px; font-size:16px; }
+            .battle-inventory-slot { width:42px; min-width:42px; height:46px; font-size:9px; }
+        }
     </style>
 </head>
 <body>
@@ -948,6 +974,7 @@
                 <div id="landing-tower-panel" class="mode-detail-panel">
                     <p style="margin:0 0 6px 0;"><b>【主線規則】：</b>第 1 關 10 波，第 2 關 15 波，每關遞增 5 波，總共一百關！</p>
                     <p style="margin:0 0 6px 0;"><b>【星級評價】：</b>滿血 5 格 3 星(30金幣)、4 格 2 星(20金幣)、其餘 1 星(10金幣)。</p>
+                    <p style="margin:0 0 6px 0;"><b>【波次規則】：</b>主線沒有狂暴機制；每 5 波照常出現 Boss。</p>
                     <p style="margin:0 0 12px 0;"><b>【關卡商店】：</b>第 5 關起，每關結束後開放行腳商，可用金幣購買道具！</p>
                     <div style="text-align: center;">
                         <button class="btn" id="btn-enter-tower" style="padding: 10px 28px; font-size: 16px; background: #2e7d32;">啟程・進入神木塔</button>
@@ -960,8 +987,8 @@
                         <h3 style="color:#e65100;">⚔️ 多人 PK 競技場說明</h3>
                         <ul>
                             <li><b>10 秒準備：</b>開局先有 10 秒自由布陣與升等時間，之後進入戰鬥。</li>
-                            <li><b>前 10 波保護：</b>第 1～10 波絕對不會觸發狂暴模式。</li>
-                            <li><b>狂暴模式：</b>第 11 波開始才可能隨機觸發，會增加敵人數量與首領強度。</li>
+                            <li><b>前 20 波保護：</b>第 1～20 波絕對不會觸發狂暴模式。</li>
+                            <li><b>狂暴模式：</b>第 21 波開始才可能隨機觸發；兩次狂暴之間至少隔 2 個普通波次，會增加敵人數量與首領強度。</li>
                             <li><b>對決人數：</b>支援 2 人或 3 人混戰。</li>
                             <li><b>操控方式：</b>玩家 2、玩家 3 可各自選擇真人或 AI 電腦。</li>
                             <li><b>勝負：</b>敵方陣地失守或只剩一方存活時結束戰鬥。</li>
@@ -1082,6 +1109,7 @@
 
     <div id="shop-float-btn">🛍️</div>
     <div id="trash-bin">🗑️<div style="font-size:11px;">拖入丟棄</div></div>
+    <div id="battle-inventory-bar" aria-label="已購買的戰鬥道具欄"></div>
     <div id="battle-item-bar">
         <button class="battle-item-btn" id="item-poison-btn" disabled>☠️ 毒藥</button>
         <button class="battle-item-btn" id="item-ice-btn" disabled>❄️ 冰河時期</button>
@@ -1098,7 +1126,7 @@
     <div id="shop-modal" class="modal-overlay">
         <div class="modal-card">
             <h2 style="margin-top:0; color:#2e4d25;">🛒 叢林補給行腳商</h2>
-            <p style="font-size: 12px; color: #666;">第五關起開放；所有道具皆為 150 金幣，本關購買後只在本關生效。</p>
+            <p style="font-size: 12px; color: #666;">第五關起，關卡結束回到爬塔介面後開放；所有道具皆為 150 金幣。購買後永久持有，之後每關可依規則使用。</p>
             <div class="shop-grid">
                 <div class="shop-item-card">
                     <div style="text-align:left;"><b>🗑️ 垃圾桶</b><br><span style="font-size:12px;color:#777;">購買後顯示垃圾桶，可將戰場上的生物或工具直接拖曳丟棄。</span></div>
@@ -1557,6 +1585,16 @@
             { name: "水蛙", words: ["水", "蛙"], r: 2, baseSpd: 40, skill: "連環水砲", skillType: "medium_aoe", aoeRadius: 2.2, dmgMult: 2.1 },
             { name: "龍貓", words: ["龍", "貓"], r: 2, baseSpd: 38, skill: "幻氣震爆", skillType: "medium_aoe", aoeRadius: 2.2, dmgMult: 2.0 },
             { name: "水牛", words: ["水", "牛"], r: 2.2, baseSpd: 36, skill: "蠻力衝撞", skillType: "medium_aoe", aoeRadius: 2.2, dmgMult: 2.4 },
+            { name: "野牛", words: ["野", "牛"], r: 2.2, baseSpd: 36, skill: "荒野衝鋒", skillType: "medium_aoe", aoeRadius: 2.3, dmgMult: 2.4 },
+            { name: "青魚", words: ["青", "魚"], r: 3, baseSpd: 40, skill: "青鱗水彈", skillType: "large_aoe", aoeRadius: 3.4, dmgMult: 1.5 },
+            { name: "灰虎", words: ["灰", "虎"], r: 1.5, baseSpd: 37, skill: "灰影撕裂", skillType: "single_burst", dmgMult: 3.8 },
+            { name: "灰獅", words: ["灰", "獅"], r: 1.5, baseSpd: 38, skill: "灰獅咆哮", skillType: "single_burst", dmgMult: 4.0 },
+            { name: "獅虎", words: ["獅", "虎"], r: 1.5, baseSpd: 36, skill: "獅虎猛襲", skillType: "single_burst", dmgMult: 4.2 },
+            { name: "青鼠", words: ["青", "鼠"], r: 1.5, baseSpd: 35, skill: "青影疾齒", skillType: "single_burst", dmgMult: 3.3 },
+            { name: "灰豹", words: ["灰", "豹"], r: 1.5, baseSpd: 35, skill: "灰影獵殺", skillType: "single_burst", dmgMult: 3.9 },
+            { name: "老牛", words: ["老", "牛"], r: 2.2, baseSpd: 38, skill: "老牛猛撞", skillType: "medium_aoe", aoeRadius: 2.2, dmgMult: 2.5 },
+            { name: "金牛", words: ["金", "牛"], r: 2.4, baseSpd: 37, skill: "金角震擊", skillType: "medium_aoe", aoeRadius: 2.5, dmgMult: 2.6 },
+            { name: "野鼠", words: ["野", "鼠"], r: 1.5, baseSpd: 34, skill: "荒野疾齒", skillType: "single_burst", dmgMult: 3.2 },
             { name: "魚鷹", words: ["魚", "鷹"], r: 4.2, baseSpd: 36, skill: "俯衝獵殺", skillType: "single_burst", dmgMult: 4.2 },
             { name: "魚虎", words: ["魚", "虎"], r: 3.4, baseSpd: 37, skill: "虎口追咬", skillType: "single_burst", dmgMult: 4.0 },
             { name: "龍魚", words: ["龍", "魚"], r: 3.4, baseSpd: 36, skill: "龍鱗水彈", skillType: "large_aoe", aoeRadius: 4.2, dmgMult: 1.8 },
@@ -1599,21 +1637,25 @@
         let canOpenPostBattleShop = false;
         let goldenShovelsForCurrentLevel = 0;
         let goldenShovelBank = 0;
+        // 已購買的商店道具：購買後永久持有，之後每一關可各使用一次（額外鏟子每關給 2 把）。
+        let ownedShopItems = { trash:false, bulldozer:false, poison:false, ice:false, extraShovel:false, volcano:false };
+        let lastRaidWave = -999;
 
         const SHOP_PRICE = 150;
         let levelItems = {};
         function resetLevelItems() {
+            // 商店購買屬於永久持有；每進入新關卡只重置「本關使用次數」。
             levelItems = {
-                trash: false,
-                bulldozer: false,
+                trash: !!ownedShopItems.trash,
+                bulldozer: !!ownedShopItems.bulldozer,
                 bulldozerUsed: false,
-                poison: false,
+                poison: !!ownedShopItems.poison,
                 poisonUsed: false,
                 poisonWavesRemaining: 0,
-                ice: false,
+                ice: !!ownedShopItems.ice,
                 iceUsed: false,
-                extraShovel: false,
-                volcano: false,
+                extraShovel: !!ownedShopItems.extraShovel,
+                volcano: !!ownedShopItems.volcano,
                 volcanoUsed: false,
                 volcanoFrames: 0,
                 volcanoTick: 0,
@@ -2400,7 +2442,7 @@
 
             queueWave(waveNum, isRaid = false) {
                 this.waveKillCount = 0;
-                let isBossWave = (waveNum % 5 === 0) || (isRaid && waveNum > 15);
+                let isBossWave = (waveNum % 5 === 0) || (isRaid && waveNum > 50);
                 let enemyPool = selectedMap.enemies;
 
                 let totalCount = 4;
@@ -2738,7 +2780,8 @@
 
                 if (sp.skillType === "single_burst") {
                     sound.playBurst();
-                    let baseDmg = (16 + tier * 6) * tier;
+                    let attackMultiplier = this.getCreatureAttackMultiplier();
+                    let baseDmg = (16 + tier * 6) * tier * attackMultiplier;
                     let burstDmg = Math.floor(baseDmg * sp.dmgMult);
                     this.projectiles.push({
                         attackType: 'skill_burst',
@@ -2753,7 +2796,8 @@
                 } else {
                     sound.playAoE();
                     let aoePixelRadius = sp.aoeRadius * this.cellW;
-                    let baseDmg = (16 + tier * 6) * tier;
+                    let attackMultiplier = this.getCreatureAttackMultiplier();
+                    let baseDmg = (16 + tier * 6) * tier * attackMultiplier;
                     let aoeDmg = Math.floor(baseDmg * sp.dmgMult);
 
                     this.projectiles.push({
@@ -2862,14 +2906,21 @@
                 }
             }
 
+            // 生物攻擊倍率：基礎攻擊力 ×2；每完成 5 個關卡後，再 ×1.5。
+            // 例如：Lv.1~5 = ×2、Lv.6~10 = ×3、Lv.11~15 = ×4.5。
+            getCreatureAttackMultiplier() {
+                return 2 * Math.pow(1.5, Math.floor(Math.max(0, currentLevel - 1) / 5));
+            }
+
             triggerAttack(ux, uy, range, tier, originCells, sourceFormation, isSpecial) {
                 let maxDist = (range + 0.3) * this.cellW;
+                const attackMultiplier = this.getCreatureAttackMultiplier();
 
                 for (let en of this.enemies) {
                     let pPos = this.getEnemyPos(en);
                     let dist = Math.hypot(pPos.x - ux, pPos.y - uy);
                     if (dist <= maxDist && en.hp > 0) {
-                        let calcDmg = (14 + tier * 6) * tier;
+                        let calcDmg = (14 + tier * 6) * tier * attackMultiplier;
 
                         if (range <= 1.5) {
                             let dx = (pPos.x - ux);
@@ -3660,6 +3711,7 @@
             isPaused = false;
             pauseOverlay.style.display = 'none';
             towerView.style.display = 'none';
+            shopFloatBtn.style.display = 'none';
             landingPage.style.display = 'flex';
         };
 
@@ -3673,6 +3725,7 @@
             battleItemBar.style.display = 'none';
             trashBin.style.display = 'none';
             towerView.style.display = 'none';
+            shopFloatBtn.style.display = 'none';
             landingPage.style.display = 'flex';
         };
 
@@ -3687,6 +3740,7 @@
             prepRemainingMs = 10000;
             prepLastTimestamp = performance.now();
             currentWaveRaid = false;
+            lastRaidWave = -999;
             raidCooldown = 0;
             aiClock = 0;
             gameStarted = false;
@@ -3695,7 +3749,8 @@
             canOpenPostBattleShop = false;
             resetLevelItems();
             shopOpen = false;
-            goldenShovelsForCurrentLevel = goldenShovelBank;
+            shopFloatBtn.style.display = 'none';
+            goldenShovelsForCurrentLevel = ownedShopItems.extraShovel ? 2 : goldenShovelBank;
             goldenShovelBank = 0;
             window.goldenShovelArmed = false;
             raidBanner.style.display = 'none';
@@ -3797,6 +3852,40 @@
         const itemPoisonBtn = document.getElementById('item-poison-btn');
         const itemIceBtn = document.getElementById('item-ice-btn');
         const itemVolcanoBtn = document.getElementById('item-volcano-btn');
+        // 道具欄固定放在主線左下控制列，與金色鏟子同一區，不遮住戰場。
+        const battleInventoryBar = document.getElementById('battle-inventory-bar');
+        const p1ControlsBox = document.querySelector('#p1-dock-box .controls-box');
+        if (battleInventoryBar && p1ControlsBox) p1ControlsBox.insertBefore(battleInventoryBar, p1ControlsBox.firstChild);
+
+        function updateGoldenShovelUI() {
+            const slot = document.getElementById('p1-golden-shovel-slot');
+            if (!slot) return;
+            const visible = gameMode === 'tower' && gameStarted && !isGameOver && goldenShovelsForCurrentLevel > 0;
+            slot.style.display = visible ? 'inline-flex' : 'none';
+            slot.innerHTML = `⛏️<br>×${goldenShovelsForCurrentLevel}`;
+            slot.title = visible ? '拖曳金色鏟子到戰場格子使用' : '尚未購買金色鏟子';
+        }
+
+        function updateBattleInventoryUI() {
+            const bar = document.getElementById('battle-inventory-bar');
+            if (!bar) return;
+            const visible = gameMode === 'tower' && currentLevel >= 5 && gameStarted && !isGameOver && !isPaused && !shopOpen && bar.children.length > 0;
+            bar.innerHTML = '';
+            const addSlot = (key, icon, label, disabled, onclick) => {
+                if (!levelItems[key]) return;
+                const b = document.createElement('button');
+                b.className = 'battle-inventory-slot';
+                b.innerHTML = `${icon}<span>${label}</span>`;
+                b.disabled = !!disabled;
+                b.onclick = onclick;
+                bar.appendChild(b);
+            };
+            addSlot('trash','🗑️','垃圾桶',false,()=>{ trashBin.style.display = trashBin.style.display === 'none' ? 'flex' : 'none'; });
+            addSlot('poison','☠️', levelItems.poisonUsed ? '已使用' : (levelItems.poisonWavesRemaining ? `${levelItems.poisonWavesRemaining}波` : '毒藥'), levelItems.poisonUsed || levelItems.poisonWavesRemaining > 0, ()=>itemPoisonBtn.click());
+            addSlot('ice','❄️', levelItems.iceUsed ? '已使用' : '冰河', levelItems.iceUsed, ()=>itemIceBtn.click());
+            addSlot('volcano','🌋', levelItems.volcanoUsed ? '已使用' : '火山', levelItems.volcanoUsed, ()=>itemVolcanoBtn.click());
+            bar.style.display = (visible && bar.children.length > 0) ? 'flex' : 'none';
+        }
 
         function updateGoldenShovelUI() {
             const slot = document.getElementById('p1-golden-shovel-slot');
@@ -3808,39 +3897,33 @@
         }
 
         function updateBattleItemUI() {
-            const towerBattle = gameMode === 'tower' && currentLevel >= 5 && gameStarted && !isGameOver && !isPaused && !shopOpen;
-            battleItemBar.style.display = towerBattle ? 'flex' : 'none';
-            trashBin.style.display = (towerBattle && levelItems.trash) ? 'flex' : 'none';
-
+            // 舊的頂部道具列完全停用，戰鬥道具統一移到左下角獨立欄位。
+            battleItemBar.style.display = 'none';
+            trashBin.style.display = 'none';
             itemPoisonBtn.disabled = !levelItems.poison || levelItems.poisonUsed || levelItems.poisonWavesRemaining > 0;
             itemIceBtn.disabled = !levelItems.ice || levelItems.iceUsed;
             itemVolcanoBtn.disabled = !levelItems.volcano || levelItems.volcanoUsed;
-
-            itemPoisonBtn.innerText = levelItems.poisonUsed ? '☠️ 毒藥 ✓' : (levelItems.poisonWavesRemaining > 0 ? `☠️ 毒藥 (${levelItems.poisonWavesRemaining}波)` : (levelItems.poison ? '☠️ 毒藥・啟用' : '☠️ 毒藥'));
+            itemPoisonBtn.innerText = levelItems.poisonUsed ? '☠️ 毒藥 ✓' : (levelItems.poisonWavesRemaining > 0 ? `☠️ 毒藥 (${levelItems.poisonWavesRemaining}波)` : '☠️ 毒藥・啟用');
             itemIceBtn.innerText = levelItems.iceUsed ? '❄️ 冰河時期 ✓' : '❄️ 冰河時期';
-            itemVolcanoBtn.innerText = levelItems.volcanoUsed ? '🌋 火山爆發 ✓' : (levelItems.volcano && levelItems.volcanoFrames > 0 ? `🌋 火山 ${Math.ceil(levelItems.volcanoFrames / 60)}s` : '🌋 火山爆發');
-
-            const statuses = [];
-            if (levelItems.bulldozer) statuses.push(levelItems.bulldozerUsed ? '🚜 推土機已使用' : '🚜 推土機待命');
-            if (goldenShovelsForCurrentLevel > 0) statuses.push(`⛏️ 金色鏟子 ×${goldenShovelsForCurrentLevel}`);
-            if (levelItems.volcano && levelItems.volcanoFrames > 0) statuses.push(`🌋 岩漿 ${Math.ceil(levelItems.volcanoFrames / 60)}秒`);
-            itemStatusText.innerText = statuses.length ? statuses.join('　') : '商店道具';
+            itemVolcanoBtn.innerText = levelItems.volcanoUsed ? '🌋 火山爆發 ✓' : '🌋 火山爆發';
+            updateBattleInventoryUI();
+            updateGoldenShovelUI();
         }
 
         function updateShopButtons() {
             const map = {
-                'buy-trash-btn': levelItems.trash,
-                'buy-bulldozer-btn': levelItems.bulldozer,
-                'buy-poison-btn': levelItems.poison,
-                'buy-ice-btn': levelItems.ice,
-                'buy-extra-shovel-btn': levelItems.extraShovel,
-                'buy-volcano-btn': levelItems.volcano
+                'buy-trash-btn': ownedShopItems.trash,
+                'buy-bulldozer-btn': ownedShopItems.bulldozer,
+                'buy-poison-btn': ownedShopItems.poison,
+                'buy-ice-btn': ownedShopItems.ice,
+                'buy-extra-shovel-btn': ownedShopItems.extraShovel,
+                'buy-volcano-btn': ownedShopItems.volcano
             };
             Object.keys(map).forEach(id => {
                 const btn = document.getElementById(id);
                 if (!btn) return;
                 btn.disabled = map[id] || gold < SHOP_PRICE;
-                btn.innerText = map[id] ? '本關已購買' : `${SHOP_PRICE} 金幣`;
+                btn.innerText = map[id] ? '已購買' : `${SHOP_PRICE} 金幣`;
             });
         }
 
@@ -3856,52 +3939,53 @@
         }
 
         function openPostBattleShop() {
-            if (!canOpenPostBattleShop || gameMode !== 'tower' || currentLevel < 5) return;
+            if (!canOpenPostBattleShop || gameMode !== 'tower' || currentLevel < 5 || !isGameOver) return;
             sound.init();
             shopOpen = true;
             shopModal.style.display = 'flex';
             updateShopButtons();
         }
-        shopFloatBtn.onclick = () => {};
-        closeShopBtn.onclick = () => { shopOpen = false; shopModal.style.display = 'none'; };
+        shopFloatBtn.onclick = openPostBattleShop;
+        closeShopBtn.onclick = () => { shopOpen = false; shopModal.style.display = 'none'; if (canOpenPostBattleShop && gameMode === 'tower' && isGameOver) shopFloatBtn.style.display = 'flex'; };
+
         document.getElementById('postbattle-shop-btn').onclick = openPostBattleShop;
 
         document.getElementById('buy-trash-btn').onclick = () => tryBuyShopItem(() => {
-            if (levelItems.trash) return false;
-            levelItems.trash = true;
+            if (ownedShopItems.trash) return false;
+            ownedShopItems.trash = true; levelItems.trash = true;
             return true;
         });
 
         document.getElementById('buy-bulldozer-btn').onclick = () => tryBuyShopItem(() => {
-            if (levelItems.bulldozer) return false;
-            levelItems.bulldozer = true;
+            if (ownedShopItems.bulldozer) return false;
+            ownedShopItems.bulldozer = true; levelItems.bulldozer = true;
             return true;
         });
 
         document.getElementById('buy-poison-btn').onclick = () => tryBuyShopItem(() => {
-            if (levelItems.poison) return false;
-            levelItems.poison = true;
+            if (ownedShopItems.poison) return false;
+            ownedShopItems.poison = true; levelItems.poison = true;
             levelItems.poisonUsed = false;
             levelItems.poisonWavesRemaining = 0;
             return true;
         });
 
         document.getElementById('buy-ice-btn').onclick = () => tryBuyShopItem(() => {
-            if (levelItems.ice) return false;
-            levelItems.ice = true;
+            if (ownedShopItems.ice) return false;
+            ownedShopItems.ice = true; levelItems.ice = true;
             return true;
         });
 
         document.getElementById('buy-extra-shovel-btn').onclick = () => tryBuyShopItem(() => {
-            if (levelItems.extraShovel) return false;
-            levelItems.extraShovel = true;
+            if (ownedShopItems.extraShovel) return false;
+            ownedShopItems.extraShovel = true; levelItems.extraShovel = true;
             goldenShovelBank += 2;
             return true;
         });
 
         document.getElementById('buy-volcano-btn').onclick = () => tryBuyShopItem(() => {
-            if (levelItems.volcano) return false;
-            levelItems.volcano = true;
+            if (ownedShopItems.volcano) return false;
+            ownedShopItems.volcano = true; levelItems.volcano = true;
             return true;
         });
 
@@ -3945,7 +4029,8 @@
             shopModal.style.display = 'none';
             shopFloatBtn.style.display = 'none';
             canOpenPostBattleShop = (gameMode === 'tower' && isWin && currentLevel >= 5);
-            document.getElementById('postbattle-shop-btn').style.display = canOpenPostBattleShop ? 'inline-block' : 'none';
+            document.getElementById('postbattle-shop-btn').style.display = 'none';
+            shopFloatBtn.style.display = 'none';
             window.goldenShovelArmed = false;
             battleItemBar.style.display = 'none';
             trashBin.style.display = 'none';
@@ -3997,6 +4082,7 @@
             window.goldenShovelArmed = false;
             if (gameMode === "tower") {
                 towerView.style.display = 'flex';
+                shopFloatBtn.style.display = canOpenPostBattleShop ? 'flex' : 'none';
                 build100StagesMap();
             } else {
                 landingPage.style.display = 'flex';
@@ -4069,22 +4155,25 @@
                             if (gameMode === "tower" && wave > maxWavesForLevel) {
                                 handleLevelComplete(true);
                             } else {
-                                // PK 前 10 波固定不觸發狂暴；第 11 波開始才恢復機率。
-                                if (gameMode === "pk" && wave <= 10) {
-                                    currentWaveRaid = false;
-                                } else if (gameMode === "tower" && currentLevel <= 3) {
-                                    currentWaveRaid = false;
-                                } else {
-                                    let raidChance = (gameMode === "tower" && currentLevel % 5 === 0) ? 0.30 : 0.15;
-                                    currentWaveRaid = Math.random() < raidChance;
-                                }
+                                // 主線完全不使用狂暴機制；狂暴僅保留給 PK 模式。
+                                currentWaveRaid = false;
+                                if (gameMode === "pk") {
+                                    // PK：第 1～20 波保護；第 21 波起才可能觸發，且兩次狂暴至少間隔 2 個普通波次。
+                                    const raidEligible = wave > 20;
+                                    const raidGapOk = (lastRaidWave < 0) || (wave - lastRaidWave >= 3);
+                                    if (raidEligible && raidGapOk) {
+                                        const raidChance = 0.15;
+                                        currentWaveRaid = Math.random() < raidChance;
+                                    }
 
-                                if (currentWaveRaid) {
-                                    raidBanner.style.display = 'block';
-                                    raidBanner.innerText = `🚨 狂暴模式爆發！(一般怪量 3 倍 / 首領血量 3 倍！) 🚨`;
-                                    raidCooldown = 180;
-                                    sound.playRaidAlert();
-                                    document.getElementById('wave-counter').innerText = `🔥 第 ${wave} 波 (狂暴突襲！)`;
+                                    if (currentWaveRaid) {
+                                        lastRaidWave = wave;
+                                        raidBanner.style.display = 'block';
+                                        raidBanner.innerText = `🚨 狂暴模式爆發！(一般怪量 3 倍 / 首領血量 3 倍！) 🚨`;
+                                        raidCooldown = 180;
+                                        sound.playRaidAlert();
+                                        document.getElementById('wave-counter').innerText = `🔥 第 ${wave} 波 (狂暴突襲！)`;
+                                    }
                                 }
 
                                 for (let i = 0; i < activeCount; i++) players[i].queueWave(wave, currentWaveRaid);
