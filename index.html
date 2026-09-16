@@ -253,6 +253,49 @@
             padding: 12px;
             border-width: 4px;
         }
+
+        .player-side.pk-eliminated {
+            pointer-events: none;
+            border-color: #666;
+        }
+        .player-side.pk-eliminated::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: rgba(80, 80, 80, 0.68);
+            z-index: 50;
+            pointer-events: none;
+        }
+        .player-eliminated-rank {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 60;
+            color: #d50000;
+            font-size: clamp(28px, 4vw, 52px);
+            font-weight: 1000;
+            text-shadow: 0 2px 4px rgba(255,255,255,0.85), 0 3px 8px rgba(0,0,0,0.75);
+            white-space: nowrap;
+            pointer-events: none;
+        }
+        #game-arena.pk-four-mode .player-side {
+            width: 300px;
+            min-width: 0;
+            padding: 6px;
+        }
+        #game-arena.pk-four-mode .player-side canvas {
+            max-width: 100%;
+        }
+        @media (max-width: 1350px) and (min-width: 761px) {
+            #game-arena.pk-four-mode { gap: 7px; padding: 7px; }
+            #game-arena.pk-four-mode .player-side { width: calc((100vw - 49px) / 4); }
+            #game-arena.pk-four-mode .player-side canvas { width: 100%; height: auto; }
+            #game-arena.pk-four-mode .dock-slot { width: 29px; min-width: 29px; height: 40px; font-size: 14px; }
+            #game-arena.pk-four-mode .dock-slot .badge { font-size: 8px; }
+            #game-arena.pk-four-mode .controls-box .btn { font-size: 11px; padding: 5px 4px; }
+        }
         .side-header {
             width: 100%;
             display: flex;
@@ -950,21 +993,9 @@
 
     <div id="landing-page">
         <div class="landing-title">自然文字對決</div>
-        <div class="landing-subtitle">✦ 遠古神木爬塔 ✕ 三方陣地博弈 ✦</div>
+        <div class="landing-subtitle">✦ 遠古神木爬塔 ✕ 多人陣地博弈 ✦</div>
 
         <div class="landing-card">
-            <div class="instructions-box" id="mode-instructions">
-                <h3>🌲 主線爬塔模式說明</h3>
-                <ul>
-                    <li><b>10 秒準備：</b>每關開始先有 10 秒布陣與升等時間，倒數結束後敵人才會進犯。</li>
-                    <li><b>波次：</b>第 1 關 10 波，第 2 關 15 波，之後每關增加 5 波。</li>
-                    <li><b>首波補給：</b>第 1 波固定 4 隻敵人，全部擊破後可獲得抽牌補充。</li>
-                    <li><b>BOSS：</b>每 5 波出現首領，擁有暈眩、麻痺、冰凍、劇毒等特殊技能。</li>
-                    <li><b>爬塔：</b>共 100 關，通關可依剩餘生命取得 1～3 星與金幣獎勵。</li>
-                    <li><b>關卡商店：</b>第 5 關開始，只有在關卡結束後才能進入商店購買特殊道具。</li>
-                </ul>
-            </div>
-
             <div class="mode-selection-zone">
                 <div class="mode-tabs">
                     <button type="button" class="mode-tab-btn active" id="btn-tab-tower">🌲 主線爬塔模式</button>
@@ -989,16 +1020,17 @@
                             <li><b>10 秒準備：</b>開局先有 10 秒自由布陣與升等時間，之後進入戰鬥。</li>
                             <li><b>前 20 波保護：</b>第 1～20 波絕對不會觸發狂暴模式。</li>
                             <li><b>狂暴模式：</b>第 21 波開始才可能隨機觸發；兩次狂暴之間至少隔 2 個普通波次，會增加敵人數量與首領強度。</li>
-                            <li><b>對決人數：</b>支援 2 人或 3 人混戰。</li>
-                            <li><b>操控方式：</b>玩家 2、玩家 3 可各自選擇真人或 AI 電腦。</li>
+                            <li><b>對決人數：</b>支援 2～4 人混戰。</li>
+                            <li><b>操控方式：</b>玩家 2～4 可各自選擇真人或 AI 電腦。</li>
                             <li><b>勝負：</b>敵方陣地失守或只剩一方存活時結束戰鬥。</li>
                         </ul>
                     </div>
-                    <p style="margin:0 0 10px 0;"><b>【競技配置】：</b>支援最高 3 人對決，可獨立挑選真人或 AI 電腦！</p>
+                    <p style="margin:0 0 10px 0;"><b>【競技配置】：</b>支援最高 4 人對決，可獨立挑選真人或 AI 電腦！</p>
                     <div style="margin-bottom: 8px;">
                         <b>對決人數：</b>
                         <label><input type="radio" name="landing-pk-count" value="2" checked> 雙人單挑</label>
                         <label style="margin-left: 12px;"><input type="radio" name="landing-pk-count" value="3"> 三人混戰</label>
+                        <label style="margin-left: 12px;"><input type="radio" name="landing-pk-count" value="4"> 四人混戰</label>
                     </div>
                     <div style="margin-bottom: 8px;">
                         <b>玩家 2 操控者：</b>
@@ -1010,6 +1042,13 @@
                     <div style="margin-bottom: 12px;" id="landing-p3-box">
                         <b>玩家 3 操控者：</b>
                         <select id="landing-p3-select" style="padding: 3px 6px; border-radius: 4px;">
+                            <option value="ai">🤖 電腦 AI</option>
+                            <option value="human">👤 真人玩家</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 12px;" id="landing-p4-box">
+                        <b>玩家 4 操控者：</b>
+                        <select id="landing-p4-select" style="padding: 3px 6px; border-radius: 4px;">
                             <option value="ai">🤖 電腦 AI</option>
                             <option value="human">👤 真人玩家</option>
                         </select>
@@ -1074,6 +1113,20 @@
                 <div class="dock-slots" id="p3-dock"></div>
                 <div class="controls-box">
                     <button class="btn" id="p3-summon-btn">重抽補滿 (1/1)</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="player-side" id="p4-side" style="display:none;">
+            <div class="side-header">
+                <span id="p4-title">玩家 4 (電腦)</span>
+                <span id="p4-stats">❤️ 5 | 擊殺: 0</span>
+            </div>
+            <canvas id="canvas-p4" width="315" height="450"></canvas>
+            <div class="dock-container" id="p4-dock-box">
+                <div class="dock-slots" id="p4-dock"></div>
+                <div class="controls-box">
+                    <button class="btn" id="p4-summon-btn">重抽補滿 (1/1)</button>
                 </div>
             </div>
         </div>
@@ -1620,6 +1673,8 @@
         let pkPlayerCount = 2;
         let p2IsAi = true;
         let p3IsAi = true;
+        let p4IsAi = true;
+        let pkEliminationOrder = [];
 
         let gameStarted = false;
         let isGameOver = false;
@@ -1701,6 +1756,8 @@
             reset() {
                 this.hp = 5;
                 this.kills = 0;
+                this.eliminated = false;
+                this.eliminationRank = null;
                 this.availableDraws = 1;
                 this.waveKillCount = 0;
                 this.waveTargetKill = 0;
@@ -1780,7 +1837,7 @@
 
                     slot.addEventListener('pointerdown', (e) => {
                         sound.init();
-                        if (isGameOver) return;
+                        if (isGameOver || this.eliminated || this.hp <= 0) return;
                         e.preventDefault();
                         e.stopPropagation();
 
@@ -1851,7 +1908,7 @@
 
             summon() {
                 sound.init();
-                if (this.availableDraws <= 0 || isGameOver) return;
+                if (this.availableDraws <= 0 || isGameOver || this.eliminated || this.hp <= 0) return;
                 this.availableDraws--;
 
                 this.dock = Array(DOCK_SIZE).fill(null);
@@ -2531,16 +2588,17 @@
 
             update() {
                 this.statsEl.innerText = `❤️ ${this.hp} | 擊殺: ${this.kills}`;
+                if (this.eliminated) return;
 
                 if (this.availableDraws > 0) {
                     this.summonBtn.innerText = `重抽補滿 (可抽:${this.availableDraws})`;
-                    this.summonBtn.disabled = isGameOver;
+                    this.summonBtn.disabled = isGameOver || this.eliminated;
                 } else {
                     this.summonBtn.innerText = `擊殺進度 (${this.kills}/${this.currentKillTarget})`;
                     this.summonBtn.disabled = true;
                 }
 
-                if (!gameStarted || isGameOver) return;
+                if (!gameStarted || isGameOver || this.eliminated || this.hp <= 0) return;
 
                 for (let i = this.spawnQueue.length - 1; i >= 0; i--) {
                     let item = this.spawnQueue[i];
@@ -3399,110 +3457,175 @@
                 }
             }
 
-            aiAction() {
-                if (isGameOver || !isAiMode) return;
+            getAiItemRange(item) {
+                if (!item) return 2;
+                if (item.type === 'base') return BASE_UNITS[item.val]?.r || 2;
+                if (item.type === 'char') {
+                    const sp = SPECIES.find(x => x.name === item.val);
+                    return sp?.r || 2;
+                }
+                return 2;
+            }
 
+            aiScoreCell(r, c, item) {
+                const cell = this.grid[r][c];
+                if (!cell || cell.isPath || !cell.unlocked || cell.unit) return -Infinity;
+
+                const range = this.getAiItemRange(item);
+                let score = 0;
+                const pathLen = Math.max(1, selectedMap.path.length - 1);
+
+                // 以「能覆蓋多少敵人行進路線」為主，但越靠近營地的路段權重越高。
+                selectedMap.path.forEach((p, idx) => {
+                    const d = Math.hypot(p.r - r, p.c - c);
+                    if (d <= range + 0.25) {
+                        const lateDangerWeight = 1 + (idx / pathLen) * 2.4;
+                        score += 10 * lateDangerWeight;
+                    }
+                });
+
+                // 場上已經有敵人時，優先照顧最靠近營地的敵人，尤其是 Boss。
+                for (const en of this.enemies) {
+                    if (!en || en.hp <= 0) continue;
+                    const pos = this.getEnemyPos(en);
+                    const cellX = (c + 0.5) * this.cellW;
+                    const cellY = (r + 0.5) * this.cellH;
+                    const dpx = Math.hypot(pos.x - cellX, pos.y - cellY) / Math.max(this.cellW, this.cellH);
+                    if (dpx <= range + 0.4) {
+                        const danger = 1 + Math.min(3, (en.step || 0) / pathLen * 4);
+                        score += (en.isBoss ? 55 : 18) * danger;
+                    }
+                }
+
+                // 稍微偏好靠近既有單位的位置，讓砲台布局集中、提高之後合體的可能性。
+                for (let dr = -2; dr <= 2; dr++) {
+                    for (let dc = -2; dc <= 2; dc++) {
+                        const rr = r + dr, cc = c + dc;
+                        if (rr < 0 || rr >= ROWS || cc < 0 || cc >= COLS) continue;
+                        const u = this.grid[rr][cc].unit;
+                        if (u) score += (u.kind === 'base' ? 1.5 : 2.2) / (1 + Math.hypot(dr, dc));
+                    }
+                }
+                return score;
+            }
+
+            aiAction() {
+                if (isGameOver || this.eliminated || this.hp <= 0 || gameMode !== 'pk') return false;
+
+                // AI 的第一優先：有可抽牌時立刻補滿牌庫，避免長時間空等。
                 if (this.availableDraws > 0) {
                     this.summon();
-                    return;
+                    return true;
                 }
 
+                // 先在牌庫中反覆尋找最高階的相同基礎生物合成，避免把 1 級單位浪費在場上。
+                let bestPair = null;
                 for (let i = 0; i < this.dock.length; i++) {
+                    const u1 = this.dock[i];
+                    if (!u1 || u1.type !== 'base') continue;
                     for (let j = i + 1; j < this.dock.length; j++) {
-                        let u1 = this.dock[i];
-                        let u2 = this.dock[j];
-                        if (u1 && u2 && u1.type === 'base' && u2.type === 'base' && u1.val === u2.val && u1.tier === u2.tier && u2.tier < 6) {
-                            u2.tier += 1;
-                            this.dock[i] = null;
-                            this.renderDock();
-                            return;
+                        const u2 = this.dock[j];
+                        if (!u2 || u2.type !== 'base') continue;
+                        if (u1.val === u2.val && u1.tier === u2.tier && u2.tier < 6) {
+                            if (!bestPair || u1.tier > bestPair.tier) bestPair = { i, j, tier:u1.tier };
                         }
                     }
                 }
-
-                for (let i = 0; i < this.dock.length; i++) {
-                    if (this.dock[i] && this.dock[i].type === 'tool') {
-                        let bestPos = null;
-                        let maxCoverage = -1;
-
-                        for (let r = 0; r < ROWS; r++) {
-                            for (let c = 0; c < COLS; c++) {
-                                if (!this.grid[r][c].isPath && !this.grid[r][c].unlocked) {
-                                    let coverage = 0;
-                                    for (let p of selectedMap.path) {
-                                        if (Math.hypot(p.r - r, p.c - c) <= 2) coverage++;
-                                    }
-                                    if (coverage > maxCoverage) {
-                                        maxCoverage = coverage;
-                                        bestPos = { r, c };
-                                    }
-                                }
-                            }
-                        }
-
-                        if (bestPos) {
-                            this.grid[bestPos.r][bestPos.c].unlocked = true;
-                            this.dock[i] = null;
-                            this.renderDock();
-                            return;
-                        }
-                    }
+                if (bestPair) {
+                    this.dock[bestPair.j].tier += 1;
+                    this.dock[bestPair.i] = null;
+                    this.renderDock();
+                    return true;
                 }
 
+                // 鏟子優先開出高防守價值的格子，尤其是能覆蓋靠近營地路段的位置。
                 for (let i = 0; i < this.dock.length; i++) {
-                    let it = this.dock[i];
-                    if (it && it.type === 'base') {
-                        for (let r = 0; r < ROWS; r++) {
-                            for (let c = 0; c < COLS; c++) {
-                                let cl = this.grid[r][c];
-                                if (cl.unlocked && cl.unit && cl.unit.kind === 'base' && cl.unit.name === it.val && cl.unit.tier === it.tier && cl.unit.tier < 6) {
-                                    cl.unit.tier += 1;
-                                    this.dock[i] = null;
-                                    this.renderDock();
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                for (let i = 0; i < this.dock.length; i++) {
-                    let it = this.dock[i];
-                    if (!it) continue;
-
-                    let bestPos = null;
-                    let maxCoverage = -1;
-
+                    if (!this.dock[i] || this.dock[i].type !== 'tool') continue;
+                    let bestPos = null, bestScore = -Infinity;
                     for (let r = 0; r < ROWS; r++) {
                         for (let c = 0; c < COLS; c++) {
-                            let cl = this.grid[r][c];
-                            if (cl.unlocked && !cl.isPath && !cl.unit) {
-                                let coverage = 0;
-                                for (let p of selectedMap.path) {
-                                    if (Math.hypot(p.r - r, p.c - c) <= 2) coverage++;
-                                }
-                                if (coverage > maxCoverage) {
-                                    maxCoverage = coverage;
-                                    bestPos = { r, c };
+                            const cell = this.grid[r][c];
+                            if (!cell.isPath && !cell.unlocked) {
+                                // 未開格先用路徑覆蓋能力評估。
+                                let score = 0;
+                                selectedMap.path.forEach((pt, idx) => {
+                                    if (Math.hypot(pt.r-r, pt.c-c) <= 2.2) score += 1 + (idx / Math.max(1, selectedMap.path.length-1)) * 2;
+                                });
+                                if (score > bestScore) { bestScore = score; bestPos = {r,c}; }
+                            }
+                        }
+                    }
+                    if (bestPos) {
+                        this.applyPlacement(bestPos.r, bestPos.c, this.dock[i], i);
+                        this.renderDock();
+                        return true;
+                    }
+                }
+
+                // 如果場上已經有相同基礎生物，優先直接合成，快速提升火力。
+                let bestGridMerge = null;
+                for (let i = 0; i < this.dock.length; i++) {
+                    const it = this.dock[i];
+                    if (!it || it.type !== 'base') continue;
+                    for (let r = 0; r < ROWS; r++) {
+                        for (let c = 0; c < COLS; c++) {
+                            const u = this.grid[r][c].unit;
+                            if (u && u.kind === 'base' && u.name === it.val && u.tier === it.tier && u.tier < 6) {
+                                if (!bestGridMerge || it.tier > bestGridMerge.tier) {
+                                    bestGridMerge = { i, r, c, tier: it.tier };
                                 }
                             }
                         }
                     }
+                }
+                if (bestGridMerge) {
+                    this.grid[bestGridMerge.r][bestGridMerge.c].unit.tier += 1;
+                    this.dock[bestGridMerge.i] = null;
+                    this.renderDock();
+                    this.detectFormations();
+                    return true;
+                }
 
-                    if (bestPos) {
-                        this.applyPlacement(bestPos.r, bestPos.c, it, i);
-                        this.renderDock();
-                        this.detectFormations();
-                        return;
+                // 最後才放置單位：計算「路線覆蓋 + 目前敵人威脅 + 靠近其他砲台」的綜合分數。
+                let bestItem = null, bestItemIdx = -1, bestPos = null, bestScore = -Infinity;
+                for (let i = 0; i < this.dock.length; i++) {
+                    const it = this.dock[i];
+                    if (!it || it.type === 'tool') continue;
+                    for (let r = 0; r < ROWS; r++) {
+                        for (let c = 0; c < COLS; c++) {
+                            const score = this.aiScoreCell(r, c, it) + (it.tier || 1) * 4;
+                            if (score > bestScore) {
+                                bestScore = score;
+                                bestItem = it;
+                                bestItemIdx = i;
+                                bestPos = {r,c};
+                            }
+                        }
                     }
                 }
+                if (bestItem && bestPos) {
+                    this.applyPlacement(bestPos.r, bestPos.c, bestItem, bestItemIdx);
+                    this.renderDock();
+                    this.detectFormations();
+                    return true;
+                }
+                return false;
+            }
+
+            aiTick() {
+                if (isGameOver || this.eliminated || this.hp <= 0 || gameMode !== 'pk') return;
+                // 每次 AI 行動最多做兩個決策：比單純「一次抽牌後發呆」更能跟上戰況，
+                // 但仍保留節奏，不會瞬間把整個牌庫全部塞完。
+                this.aiAction();
+                if (!this.eliminated && this.hp > 0 && !isGameOver) this.aiAction();
             }
         }
 
         const p1 = new PlayerState(1, 'canvas-p1', 'p1-dock', 'p1-stats', 'p1-summon-btn', 'p1-side');
         const p2 = new PlayerState(2, 'canvas-p2', 'p2-dock', 'p2-stats', 'p2-summon-btn', 'p2-side');
         const p3 = new PlayerState(3, 'canvas-p3', 'p3-dock', 'p3-stats', 'p3-summon-btn', 'p3-side');
-        const players = [p1, p2, p3];
+        const p4 = new PlayerState(4, 'canvas-p4', 'p4-dock', 'p4-stats', 'p4-summon-btn', 'p4-side');
+        const players = [p1, p2, p3, p4];
 
         function syncMobileViewportHeight() {
             const topBar = document.getElementById('top-bar');
@@ -3761,6 +3884,8 @@
             syncMobileViewportHeight();
             document.getElementById('p2-side').style.display = 'none';
             document.getElementById('p3-side').style.display = 'none';
+            document.getElementById('p4-side').style.display = 'none';
+            document.getElementById('game-arena').classList.remove('pk-four-mode');
             document.getElementById('p1-title').innerText = `玩家 1 (主角)`;
 
             switchMapToDifferent();
@@ -3780,13 +3905,27 @@
             startBattle();
         }
 
+        function updatePkPlayerConfigVisibility() {
+            const selected = Number(document.querySelector('input[name="landing-pk-count"]:checked')?.value || 2);
+            const p3Box = document.getElementById('landing-p3-box');
+            const p4Box = document.getElementById('landing-p4-box');
+            if (p3Box) p3Box.style.display = selected >= 3 ? 'block' : 'none';
+            if (p4Box) p4Box.style.display = selected >= 4 ? 'block' : 'none';
+        }
+        document.querySelectorAll('input[name="landing-pk-count"]').forEach(radio => {
+            radio.addEventListener('change', updatePkPlayerConfigVisibility);
+        });
+        updatePkPlayerConfigVisibility();
+
         btnEnterPk.onclick = () => {
             sound.init();
             gameMode = "pk";
             let pkRadios = document.getElementsByName('landing-pk-count');
-            pkPlayerCount = pkRadios[1].checked ? 3 : 2;
+            pkPlayerCount = pkRadios[2].checked ? 4 : (pkRadios[1].checked ? 3 : 2);
             p2IsAi = document.getElementById('landing-p2-select').value === 'ai';
             p3IsAi = document.getElementById('landing-p3-select').value === 'ai';
+            p4IsAi = document.getElementById('landing-p4-select').value === 'ai';
+            pkEliminationOrder = [];
 
             landingPage.style.display = 'none';
             shopFloatBtn.style.display = 'none';
@@ -3796,20 +3935,30 @@
             p1.setDimensions(315, 450, false);
             p2.setDimensions(315, 450, false);
             p3.setDimensions(315, 450, false);
+            p4.setDimensions(315, 450, false);
 
             p1.reset();
             p2.reset();
-            if (pkPlayerCount === 3) p3.reset();
+            if (pkPlayerCount >= 3) p3.reset();
+            if (pkPlayerCount >= 4) p4.reset();
 
             document.getElementById('p1-title').innerText = `玩家 1`;
             document.getElementById('p2-side').style.display = 'flex';
             document.getElementById('p2-title').innerText = `玩家 2 (${p2IsAi ? '電腦' : '真人'})`;
 
-            if (pkPlayerCount === 3) {
+            if (pkPlayerCount >= 3) {
                 document.getElementById('p3-side').style.display = 'flex';
                 document.getElementById('p3-title').innerText = `玩家 3 (${p3IsAi ? '電腦' : '真人'})`;
             } else {
                 document.getElementById('p3-side').style.display = 'none';
+            }
+            if (pkPlayerCount >= 4) {
+                document.getElementById('p4-side').style.display = 'flex';
+                document.getElementById('p4-title').innerText = `玩家 4 (${p4IsAi ? '電腦' : '真人'})`;
+                document.getElementById('game-arena').classList.add('pk-four-mode');
+            } else {
+                document.getElementById('p4-side').style.display = 'none';
+                document.getElementById('game-arena').classList.remove('pk-four-mode');
             }
 
             document.getElementById('game-mode-badge').innerText = `⚔️ PK 對決模式 (${pkPlayerCount} 人混戰)`;
@@ -3826,6 +3975,19 @@
             prepLastTimestamp = performance.now();
             gameStarted = true;
             isGameOver = false;
+            if (gameMode === 'pk') {
+                pkEliminationOrder = [];
+                players.forEach(player => {
+                    player.eliminated = false;
+                    player.eliminationRank = null;
+                    const side = document.getElementById(`p${player.id}-side`);
+                    if (side) {
+                        side.classList.remove('pk-eliminated');
+                        const rankEl = side.querySelector('.player-eliminated-rank');
+                        if (rankEl) rankEl.remove();
+                    }
+                });
+            }
             isPaused = false;
             shopOpen = false;
             canOpenPostBattleShop = false;
@@ -4020,6 +4182,26 @@
             updateGoldenShovelUI();
         }
 
+        function eliminatePkPlayer(player) {
+            if (gameMode !== 'pk' || player.eliminated || player.hp > 0) return;
+            player.eliminated = true;
+            pkEliminationOrder.push(player.id);
+            player.eliminationRank = pkPlayerCount - pkEliminationOrder.length + 1;
+
+            const side = player.sideEl = player.sideEl || document.getElementById(`p${player.id}-side`);
+            if (side) {
+                side.classList.add('pk-eliminated');
+                let rankEl = side.querySelector('.player-eliminated-rank');
+                if (!rankEl) {
+                    rankEl = document.createElement('div');
+                    rankEl.className = 'player-eliminated-rank';
+                    side.appendChild(rankEl);
+                }
+                rankEl.innerText = `第${player.eliminationRank}名`;
+            }
+            player.summonBtn.disabled = true;
+        }
+
         function handleLevelComplete(isWin) {
             isGameOver = true;
             gameStarted = false;
@@ -4069,7 +4251,8 @@
                 let alive = [];
                 if (p1.hp > 0) alive.push("玩家 1");
                 if (p2.hp > 0) alive.push("玩家 2");
-                if (pkPlayerCount === 3 && p3.hp > 0) alive.push("玩家 3");
+                if (pkPlayerCount >= 3 && p3.hp > 0) alive.push("玩家 3");
+                if (pkPlayerCount >= 4 && p4.hp > 0) alive.push("玩家 4");
                 descEl.innerText = alive.length > 0 ? `勝出陣營：${alive.join("、")}！` : "同歸於盡，平局！";
             }
         }
@@ -4201,18 +4384,19 @@
                             aiClock = 0;
                             if (gameMode === "pk") {
                                 try { if (p2IsAi) p2.aiTick(); } catch (err) { console.error('P2 AI Error:', err); }
-                                try { if (pkPlayerCount === 3 && p3IsAi) p3.aiTick(); } catch (err) { console.error('P3 AI Error:', err); }
+                                try { if (pkPlayerCount >= 3 && p3IsAi) p3.aiTick(); } catch (err) { console.error('P3 AI Error:', err); }
+                                try { if (pkPlayerCount >= 4 && p4IsAi) p4.aiTick(); } catch (err) { console.error('P4 AI Error:', err); }
                             }
                         }
 
                         if (gameMode === "tower" && p1.hp <= 0) {
                             handleLevelComplete(false);
                         } else if (gameMode === "pk") {
-                            let deadCount = 0;
-                            if (p1.hp <= 0) deadCount++;
-                            if (p2.hp <= 0) deadCount++;
-                            if (pkPlayerCount === 3 && p3.hp <= 0) deadCount++;
-                            if (deadCount >= pkPlayerCount - 1) handleLevelComplete(true);
+                            for (let i = 0; i < pkPlayerCount; i++) {
+                                if (players[i].hp <= 0) eliminatePkPlayer(players[i]);
+                            }
+                            const aliveCount = players.slice(0, pkPlayerCount).filter(player => player.hp > 0).length;
+                            if (aliveCount <= 1) handleLevelComplete(true);
                         }
                     }
                 } catch (err) {
@@ -4225,8 +4409,11 @@
             try { p1.draw(); } catch (err) { console.error('P1 Draw Error:', err); }
             if (gameMode === "pk") {
                 try { p2.draw(); } catch (err) { console.error('P2 Draw Error:', err); }
-                if (pkPlayerCount === 3) {
+                if (pkPlayerCount >= 3) {
                     try { p3.draw(); } catch (err) { console.error('P3 Draw Error:', err); }
+                }
+                if (pkPlayerCount >= 4) {
+                    try { p4.draw(); } catch (err) { console.error('P4 Draw Error:', err); }
                 }
             }
 
